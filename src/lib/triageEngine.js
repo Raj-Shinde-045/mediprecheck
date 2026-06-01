@@ -31,6 +31,11 @@ Allergies: ${intake.allergies}. Meds: ${intake.medications}.
 Previous Questions:
 ${transcript}
 
+Instructions:
+1. Ask exactly ONE follow-up question.
+2. Prioritize ruling out IMMEDIATE life-threatening conditions first (e.g., if chest pain, ask about radiation or diaphoresis).
+3. Keep the question concise and patient-friendly but clinically precise.
+
 Output ONLY a JSON object in this exact format:
 {
   "question": "The professional medical question to ask",
@@ -88,7 +93,7 @@ Analyze the transcript and generate a structured JSON output with the following 
   "analysis": [
     {"question": "Q1", "answer": "A1"}
   ],
-  "verdict": "Provide a 2-3 sentence 'Junior Doctor Verdict'. State the top 3 differential diagnoses (DDx) based on the symptoms and vitals. Highlight any immediate red flags. You MUST wrap any critical medical terms, dangerous symptoms, and diagnoses in **double asterisks** so they stand out (e.g. **Pulmonary Embolism**, **crushing chest pain**)."
+  "verdict": "Provide a concise 2-3 sentence 'Junior Doctor Verdict'. State the top 3 differential diagnoses (DDx) based on the symptoms and vitals. Highlight any immediate red flags. CRITICAL INSTRUCTION: You MUST wrap ONLY the specific Differential Diagnoses in **double asterisks** so they stand out (e.g. **Pulmonary Embolism**, **Pneumonia**). Do NOT highlight common symptoms like 'cough' or 'chest pain'. Over-highlighting ruins readability."
 }
 Output ONLY the raw JSON object.`;
 

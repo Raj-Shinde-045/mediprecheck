@@ -249,7 +249,7 @@ export function Kiosk() {
     <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} className="max-w-4xl mx-auto mt-6">
       <div className="flex justify-between items-center mb-6 px-4">
         <div className="flex items-center gap-4">
-          <div className="bg-primary/20 p-3 rounded-full shadow-lg">
+          <div className="bg-primary/20 p-3 rounded-full shadow-[0_0_20px_rgba(59,130,246,0.6)] animate-pulse border border-primary/30">
             <Bot className="w-8 h-8 text-primary" />
           </div>
           <div>
@@ -295,10 +295,11 @@ export function Kiosk() {
               )}
 
               {isThinking && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex justify-start">
-                  <div className="bg-muted/50 px-6 py-4 rounded-3xl rounded-tl-none flex items-center space-x-3 border border-white/5">
-                    <Loader2 className="w-5 h-5 animate-spin text-primary" />
-                    <span className="text-muted-foreground italic">Analyzing...</span>
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9 }} className="flex justify-start">
+                  <div className="bg-muted/60 backdrop-blur-md px-6 py-5 rounded-3xl rounded-tl-none flex items-center space-x-2 h-14 border border-white/5 shadow-sm">
+                    <motion.div animate={{ y: [0, -6, 0] }} transition={{ repeat: Infinity, duration: 0.6, ease: "easeInOut" }} className="w-2.5 h-2.5 bg-primary/70 rounded-full" />
+                    <motion.div animate={{ y: [0, -6, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0.15, ease: "easeInOut" }} className="w-2.5 h-2.5 bg-primary/70 rounded-full" />
+                    <motion.div animate={{ y: [0, -6, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0.3, ease: "easeInOut" }} className="w-2.5 h-2.5 bg-primary/70 rounded-full" />
                   </div>
                 </motion.div>
               )}

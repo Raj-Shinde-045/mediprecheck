@@ -25,11 +25,10 @@ export function DoctorQueue() {
           ...data[key]
         }));
         
-        // Sort: 'ready' first, then 'in-consult'
+        // Sort logic: 'ready' (1) -> 'in-consult' (2) -> 'on-hold' (3) -> 'completed' (4)
         queueList.sort((a, b) => {
-          if (a.status === 'ready' && b.status !== 'ready') return -1;
-          if (a.status !== 'ready' && b.status === 'ready') return 1;
-          return 0;
+          const rank = { 'ready': 1, 'in-consult': 2, 'on-hold': 3, 'completed': 4 };
+          return (rank[a.status] || 99) - (rank[b.status] || 99);
         });
         
         setQueue(queueList);
@@ -48,10 +47,17 @@ export function DoctorQueue() {
     navigate(`/doctor/review/${token}?doc=${doctorId}`);
   };
 
+  const handleToggleHold = async (token, currentStatus) => {
+    const newStatus = currentStatus === 'on-hold' ? 'ready' : 'on-hold';
+    const tokenRef = ref(db, `doctors/${doctorId}/queue/${token}`);
+    await update(tokenRef, { status: newStatus });
+  };
+
   const getStatusBadge = (status) => {
     switch(status) {
       case 'ready': return <span className="bg-yellow-500/20 text-yellow-500 px-3 py-1 rounded-full text-sm font-bold uppercase tracking-wider flex items-center gap-1"><Clock className="w-3 h-3"/> Waiting</span>;
       case 'in-consult': return <span className="bg-blue-500/20 text-blue-500 px-3 py-1 rounded-full text-sm font-bold uppercase tracking-wider">In Consult</span>;
+      case 'on-hold': return <span className="bg-red-500/10 text-red-500 border border-red-500/20 px-3 py-1 rounded-full text-sm font-bold uppercase tracking-wider">On Hold (Absent)</span>;
       case 'completed': return <span className="bg-green-500/20 text-green-500 px-3 py-1 rounded-full text-sm font-bold uppercase tracking-wider">Completed</span>;
       default: return null;
     }
@@ -131,15 +137,27 @@ export function DoctorQueue() {
                       </div>
                     </div>
                     
-                    {patient.status === 'ready' && (
-                      <Button 
-                        onClick={() => handleStartConsult(patient.token)}
-                        className="h-14 px-8 text-lg font-bold rounded-xl shadow-lg opacity-90 group-hover:opacity-100 transition-all hover:scale-105"
-                      >
-                        Review Triage
-                        <ChevronRight className="w-5 h-5 ml-2" />
-                      </Button>
-                    )}
+                    <div className="flex items-center gap-3">
+                      {(patient.status === 'ready' || patient.status === 'on-hold') && (
+                        <Button 
+                          variant="outline"
+                          onClick={() => handleToggleHold(patient.token, patient.status)}
+                          className="h-14 px-5 text-sm font-bold rounded-xl border-white/10 hover:bg-white/5 opacity-80 hover:opacity-100"
+                        >
+                          {patient.status === 'on-hold' ? 'Resume Patient' : 'Put on Hold'}
+                        </Button>
+                      )}
+                      
+                      {patient.status !== 'completed' && (
+                        <Button 
+                          onClick={() => handleStartConsult(patient.token)}
+                          className="h-14 px-8 text-lg font-bold rounded-xl shadow-lg opacity-90 group-hover:opacity-100 transition-all hover:scale-105"
+                        >
+                          Review Triage
+                          <ChevronRight className="w-5 h-5 ml-2" />
+                        </Button>
+                      )}
+                    </div>
                   </motion.div>
                 ))
               )}
