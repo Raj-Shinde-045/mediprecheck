@@ -36,6 +36,17 @@ export function TokenReview() {
     navigate('/doctor');
   };
 
+  const renderMarkdown = (text) => {
+    if (!text) return null;
+    const parts = text.split(/(\*\*.*?\*\*)/g);
+    return parts.map((part, i) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return <strong key={i} className="text-red-600 dark:text-red-400 font-black tracking-wide">{part.slice(2, -2)}</strong>;
+      }
+      return <span key={i}>{part}</span>;
+    });
+  };
+
   if (isLoading) {
     return (
       <div className="h-[80vh] flex items-center justify-center">
@@ -179,7 +190,7 @@ export function TokenReview() {
                       Junior Doctor AI Verdict & DDx
                     </h3>
                     <p className="text-lg leading-relaxed font-medium text-foreground bg-background/50 p-6 rounded-xl border border-primary/10 shadow-inner">
-                      {summary.verdict}
+                      {renderMarkdown(summary.verdict)}
                     </p>
                   </div>
                 )}

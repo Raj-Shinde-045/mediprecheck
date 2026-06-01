@@ -88,7 +88,7 @@ Analyze the transcript and generate a structured JSON output with the following 
   "analysis": [
     {"question": "Q1", "answer": "A1"}
   ],
-  "verdict": "Provide a 2-3 sentence 'Junior Doctor Verdict'. State the top 3 differential diagnoses (DDx) based on the symptoms and vitals. Highlight any immediate red flags."
+  "verdict": "Provide a 2-3 sentence 'Junior Doctor Verdict'. State the top 3 differential diagnoses (DDx) based on the symptoms and vitals. Highlight any immediate red flags. You MUST wrap any critical medical terms, dangerous symptoms, and diagnoses in **double asterisks** so they stand out (e.g. **Pulmonary Embolism**, **crushing chest pain**)."
 }
 Output ONLY the raw JSON object.`;
 
