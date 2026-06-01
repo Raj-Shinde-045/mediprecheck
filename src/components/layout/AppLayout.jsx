@@ -1,0 +1,20 @@
+import React from 'react';
+import { Outlet } from 'react-router-dom';
+import { Navbar } from './Navbar';
+
+export function AppLayout({ userRole, onLogout }) {
+  return (
+    <div className="min-h-screen bg-background flex flex-col relative overflow-hidden">
+      {/* Decorative background blurs for a premium look */}
+      <div className="absolute top-0 -left-4 w-72 h-72 bg-primary/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob pointer-events-none"></div>
+      <div className="absolute top-0 -right-4 w-72 h-72 bg-blue-300/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000 pointer-events-none"></div>
+      <div className="absolute -bottom-8 left-20 w-72 h-72 bg-purple-300/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-4000 pointer-events-none"></div>
+
+      <Navbar userRole={userRole} onLogout={onLogout} />
+      
+      <main className="flex-1 w-full max-w-7xl mx-auto p-6 z-10 relative">
+        <Outlet />
+      </main>
+    </div>
+  );
+}
