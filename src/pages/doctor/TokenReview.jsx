@@ -1,114 +1,185 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
-import { ArrowLeft, Stethoscope, FileText, CheckCircle2 } from 'lucide-react';
-import { generateSummary } from '../../lib/gemini';
+import { ArrowLeft, Stethoscope, FileText, CheckCircle2, Activity, ShieldAlert, Pill } from 'lucide-react';
+import { db } from '../../lib/firebase';
+import { ref, get, update } from 'firebase/database';
+import { motion } from 'framer-motion';
 
 export function TokenReview() {
-  const navigate = useNavigate();
   const { token } = useParams();
-  const [history, setHistory] = useState([]);
-  const [summary, setSummary] = useState('');
+  const navigate = useNavigate();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const doctorId = searchParams.get('doc') || 'doc-smith';
+
   const [isLoading, setIsLoading] = useState(true);
+  const [patientData, setPatientData] = useState(null);
 
   useEffect(() => {
     const loadData = async () => {
-      // In a real app, fetch from Firestore
-      const savedHistory = localStorage.getItem(`triage_${token}`);
-      if (savedHistory) {
-        const parsed = JSON.parse(savedHistory);
-        setHistory(parsed);
-      } else {
-        // Fallback mock
-        const mockHistory = [
-          { question: "What brings you to the clinic today?", answer: "My stomach hurts really bad." },
-          { question: "Is the pain sharp or dull?", answer: "Sharp" },
-          { question: "Do you have a fever?", answer: "Yes" }
-        ];
-        setHistory(mockHistory);
+      const tokenRef = ref(db, `doctors/${doctorId}/queue/${token}`);
+      const snapshot = await get(tokenRef);
+      
+      if (snapshot.exists()) {
+        setPatientData(snapshot.val());
       }
       setIsLoading(false);
     };
     loadData();
-  }, [token]);
+  }, [token, doctorId]);
 
-  const handleGenerateSummary = async () => {
-    setIsLoading(true);
-    const aiSummary = await generateSummary(history);
-    setSummary(aiSummary);
-    setIsLoading(false);
+  const handleMarkConsulted = async () => {
+    const tokenRef = ref(db, `doctors/${doctorId}/queue/${token}`);
+    await update(tokenRef, { status: 'completed' });
+    navigate('/doctor');
   };
 
-  return (
-    <div className="space-y-6 animate-in fade-in duration-500 max-w-4xl mx-auto mt-8">
-      <Button variant="ghost" onClick={() => navigate('/doctor')} className="-ml-4 mb-4">
-        <ArrowLeft className="w-4 h-4 mr-2" /> Back to Queue
-      </Button>
+  if (isLoading) {
+    return (
+      <div className="h-[80vh] flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
-      <div className="flex justify-between items-end mb-6">
-        <div>
-          <h1 className="text-4xl font-bold tracking-wider">{token}</h1>
-          <p className="text-muted-foreground mt-1 text-lg">Patient Triage Review</p>
+  if (!patientData) {
+    return (
+      <div className="h-[80vh] flex flex-col items-center justify-center text-center">
+        <h2 className="text-3xl font-bold mb-4">Patient Record Not Found</h2>
+        <p className="text-muted-foreground mb-8">The token {token} could not be located in your queue.</p>
+        <Button onClick={() => navigate('/doctor')}>Return to Dashboard</Button>
+      </div>
+    );
+  }
+
+  const { history, summary } = patientData;
+  const intake = history[0]; // The first item is always the intake form
+
+  return (
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 max-w-5xl mx-auto mt-8">
+      <div className="flex justify-between items-center mb-8">
+        <div className="flex items-center">
+          <Button variant="ghost" onClick={() => navigate('/doctor')} className="-ml-4 mr-4 h-12 w-12 p-0 rounded-full">
+            <ArrowLeft className="w-6 h-6" />
+          </Button>
+          <div>
+            <h1 className="text-4xl font-black tracking-tight">{token}</h1>
+            <p className="text-muted-foreground text-lg">Patient Triage Review</p>
+          </div>
         </div>
-        <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white" onClick={() => navigate('/doctor')}>
-          <CheckCircle2 className="w-5 h-5 mr-2" /> Mark as Consulted
+        <Button onClick={handleMarkConsulted} className="h-12 px-6 text-lg font-bold bg-green-600 hover:bg-green-700 text-white rounded-xl shadow-lg hover:scale-105 transition-all">
+          <CheckCircle2 className="w-5 h-5 mr-2" />
+          Mark as Consulted
         </Button>
       </div>
 
-      {isLoading ? (
-        <div className="h-64 flex items-center justify-center">
-          <p className="text-muted-foreground animate-pulse">AI is generating summary...</p>
-        </div>
-      ) : (
-        <div className="grid md:grid-cols-3 gap-6">
-          <Card glass className="md:col-span-3 border-primary/20">
-            <CardHeader className="bg-primary/5 border-b flex flex-row items-center justify-between">
-              <CardTitle className="flex items-center text-xl text-primary">
-                <Stethoscope className="w-6 h-6 mr-3" />
-                AI Triage Summary
-              </CardTitle>
-              {!summary && (
-                <Button onClick={handleGenerateSummary} variant="outline" size="sm">
-                  Generate AI Summary
-                </Button>
-              )}
-            </CardHeader>
-            <CardContent className="p-6">
-              {summary ? (
-                <p className="text-lg leading-relaxed whitespace-pre-wrap">{summary}</p>
-              ) : (
-                <p className="text-muted-foreground italic">No summary generated yet. Click the button above to analyze the transcript.</p>
-              )}
-            </CardContent>
-          </Card>
+      <div className="grid md:grid-cols-4 gap-6">
+        
+        {/* VITALS PANEL - DOCTOR'S MOST IMPORTANT VIEW */}
+        <Card glass className="md:col-span-4 border-red-500/30 shadow-xl overflow-hidden">
+          <div className="bg-red-500/10 border-b border-red-500/20 px-6 py-3 flex items-center">
+            <Activity className="w-5 h-5 text-red-500 mr-2" />
+            <h2 className="text-red-500 font-black tracking-widest uppercase text-sm">Critical Clinical Data</h2>
+          </div>
+          <CardContent className="p-0">
+            <div className="grid grid-cols-2 md:grid-cols-6 divide-x divide-y divide-white/10">
+              
+              {/* Vitals Blocks */}
+              <div className="p-6 text-center hover:bg-white/5 transition-colors">
+                <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Blood Pressure</p>
+                <p className="text-4xl font-black font-mono">{intake.vitals?.bp || 'N/A'}</p>
+              </div>
+              <div className="p-6 text-center hover:bg-white/5 transition-colors">
+                <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Heart Rate</p>
+                <p className="text-4xl font-black font-mono">{intake.vitals?.hr || 'N/A'}</p>
+                <p className="text-xs text-muted-foreground mt-1">bpm</p>
+              </div>
+              <div className="p-6 text-center hover:bg-white/5 transition-colors">
+                <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Temperature</p>
+                <p className="text-4xl font-black font-mono">{intake.vitals?.temp || 'N/A'}</p>
+                <p className="text-xs text-muted-foreground mt-1">°F</p>
+              </div>
+              <div className="p-6 text-center hover:bg-white/5 transition-colors">
+                <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">O2 Saturation</p>
+                <p className="text-4xl font-black font-mono text-blue-500">{intake.vitals?.o2 || 'N/A'}</p>
+                <p className="text-xs text-muted-foreground mt-1">%</p>
+              </div>
 
-          <Card glass className="md:col-span-3">
-            <CardHeader>
-              <CardTitle className="flex items-center text-xl">
-                <FileText className="w-5 h-5 mr-2 text-muted-foreground" />
-                Raw Q&A Transcript
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-6 space-y-4 bg-muted/20">
-              {history.map((item, i) => (
-                <div key={i} className="flex flex-col gap-3 p-5 rounded-2xl bg-background/80 border border-primary/10 shadow-sm transition-all hover:shadow-md hover:border-primary/30">
-                  <div className="flex items-start gap-4">
-                    <div className="bg-muted text-muted-foreground font-bold text-xs px-2.5 py-1 rounded-md mt-0.5">Q</div>
-                    <span className="font-medium text-foreground text-lg leading-tight">{item.question}</span>
+              {/* Allergies & Meds */}
+              <div className="p-6 text-left col-span-2 hover:bg-white/5 transition-colors">
+                <div className="mb-4">
+                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1 flex items-center">
+                    <ShieldAlert className="w-3 h-3 mr-1 text-orange-500"/> Known Allergies
+                  </p>
+                  <p className={`font-medium text-lg ${intake.allergies && intake.allergies.toLowerCase() !== 'none' ? 'text-orange-500 font-bold' : ''}`}>
+                    {intake.allergies || 'None recorded'}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1 flex items-center">
+                    <Pill className="w-3 h-3 mr-1 text-purple-500"/> Current Medications
+                  </p>
+                  <p className="font-medium">{intake.medications || 'None recorded'}</p>
+                </div>
+              </div>
+
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* AUTOMATED SUMMARY PANEL */}
+        <Card glass className="md:col-span-4 border-primary/20 shadow-xl mt-4">
+          <CardHeader className="bg-primary/5 border-b border-primary/10 flex flex-row items-center justify-between py-4">
+            <CardTitle className="flex items-center text-xl text-primary font-black">
+              <Stethoscope className="w-6 h-6 mr-3" />
+              Automated Triage Summary
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0 overflow-hidden">
+            {summary && typeof summary === 'object' ? (
+              <div>
+                {/* Top Details Bar */}
+                <div className="bg-muted/30 p-6 flex flex-wrap gap-4 border-b border-primary/10">
+                  <div className="bg-background border border-primary/20 px-4 py-2 rounded-xl flex items-center shadow-sm">
+                    <span className="text-muted-foreground text-sm font-bold uppercase tracking-wider mr-3">Patient</span>
+                    <span className="text-foreground font-black text-lg">{summary.patientDetails}</span>
                   </div>
-                  <div className="flex items-start gap-4 ml-6 pl-4 border-l-2 border-primary/20">
-                    <div className="bg-primary text-primary-foreground font-bold text-xs px-2.5 py-1 rounded-md mt-0.5 shadow-sm shadow-primary/20">A</div>
-                    <span className="text-foreground font-bold text-lg leading-tight">
-                      {item.answer || <span className="italic text-muted-foreground font-normal">No answer</span>}
-                    </span>
+                  <div className="bg-background border border-primary/20 px-4 py-2 rounded-xl flex items-center shadow-sm">
+                    <span className="text-muted-foreground text-sm font-bold uppercase tracking-wider mr-3">Chief Complaint</span>
+                    <span className="text-primary font-black text-lg">{summary.chiefComplaint}</span>
                   </div>
                 </div>
-              ))}
-            </CardContent>
-          </Card>
-        </div>
-      )}
-    </div>
+                
+                {/* Q&A Analysis */}
+                <div className="p-6 space-y-4">
+                  <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-4">Follow-up Analysis (Clinical Graph)</h3>
+                  <div className="space-y-3">
+                    {summary.analysis.map((item, idx) => (
+                      <div key={idx} className="flex items-start justify-between bg-background p-4 rounded-xl border border-white/5 shadow-sm hover:border-primary/20 transition-colors">
+                        <span className="text-foreground text-lg pr-4 font-medium">{item.question}</span>
+                        <span className={`px-4 py-1.5 rounded-lg text-sm font-black tracking-wider uppercase shrink-0 shadow-inner ${
+                          item.answer === 'Yes' ? 'bg-red-500/10 text-red-500 border border-red-500/20' : 
+                          item.answer === 'No' ? 'bg-green-500/10 text-green-500 border border-green-500/20' : 
+                          'bg-muted text-muted-foreground'
+                        }`}>
+                          {item.answer}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="p-12 text-center">
+                <p className="text-muted-foreground italic text-lg">No automated summary generated for this record.</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+      </div>
+    </motion.div>
   );
 }

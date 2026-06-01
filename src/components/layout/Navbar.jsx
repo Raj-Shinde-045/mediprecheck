@@ -1,41 +1,19 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Activity, LogOut, User } from 'lucide-react';
-import { Button } from '../ui/Button';
+import { Link } from 'react-router-dom';
+import { Activity } from 'lucide-react';
 
-export function Navbar({ userRole, onLogout }) {
-  const navigate = useNavigate();
-
+export function Navbar() {
   return (
-    <nav className="glass sticky top-0 z-50 w-full border-b px-6 py-3">
-      <div className="mx-auto flex max-w-7xl items-center justify-between">
-        <Link to="/" className="flex items-center space-x-2">
-          <Activity className="h-6 w-6 text-primary" />
-          <span className="text-xl font-bold tracking-tight">MediPreCheck</span>
+    <nav className="glass sticky top-0 z-50 w-full border-b border-white/10 px-6 py-4 bg-background/60 backdrop-blur-xl">
+      <div className="mx-auto flex max-w-7xl items-center justify-center">
+        <Link to="/" className="flex items-center space-x-3 transition-transform hover:scale-105">
+          <div className="bg-primary/20 p-2 rounded-xl">
+            <Activity className="h-7 w-7 text-primary" />
+          </div>
+          <span className="text-2xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-500">
+            MediPreCheck
+          </span>
         </Link>
-        
-        <div className="flex items-center space-x-4">
-          {userRole ? (
-            <>
-              <div className="flex items-center space-x-2 text-sm text-muted-foreground mr-4">
-                <User className="h-4 w-4" />
-                <span className="capitalize">{userRole} Portal</span>
-              </div>
-              <Button variant="ghost" size="sm" onClick={() => {
-                onLogout();
-                navigate('/');
-              }}>
-                <LogOut className="h-4 w-4 mr-2" />
-                Logout
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button variant="ghost" onClick={() => navigate('/login')}>Login</Button>
-              <Button onClick={() => navigate('/register')}>Sign Up</Button>
-            </>
-          )}
-        </div>
       </div>
     </nav>
   );

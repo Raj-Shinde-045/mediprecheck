@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
-import { Users, Clock, ChevronRight, Activity } from 'lucide-react';
+import { Users, Clock, CheckCircle2, ChevronRight, Activity } from 'lucide-react';
 import { db } from '../../lib/firebase';
 import { ref, onValue, update } from 'firebase/database';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export function DoctorQueue() {
+export function DoctorDashboard() {
   const navigate = useNavigate();
   const [doctorId, setDoctorId] = useState('doc-smith'); // Hardcoded default doctor for now
   const [queue, setQueue] = useState([]);
@@ -58,10 +58,10 @@ export function DoctorQueue() {
   };
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto mt-8">
+    <div className="space-y-6">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-4xl font-black tracking-tight mb-2">Live Queue</h1>
+          <h1 className="text-4xl font-black tracking-tight mb-2">Doctor Dashboard</h1>
           <p className="text-muted-foreground text-lg flex items-center">
             <span className="w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse"></span>
             Real-time Sync Active
@@ -105,7 +105,7 @@ export function DoctorQueue() {
             <AnimatePresence>
               {queue.length === 0 ? (
                 <div className="p-12 text-center text-muted-foreground">
-                  No patients in your queue right now.
+                  No patients in your queue.
                 </div>
               ) : (
                 queue.map((patient) => (
@@ -116,7 +116,7 @@ export function DoctorQueue() {
                     className="flex items-center justify-between p-6 hover:bg-white/5 transition-colors group"
                   >
                     <div className="flex items-center space-x-6">
-                      <div className="bg-primary/10 text-primary w-32 h-20 rounded-2xl flex items-center justify-center font-black text-2xl shadow-inner border border-primary/20">
+                      <div className="bg-primary/10 text-primary w-20 h-20 rounded-2xl flex items-center justify-center font-black text-2xl shadow-inner border border-primary/20">
                         {patient.token.split('-')[1]}
                       </div>
                       <div>
