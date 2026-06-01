@@ -56,11 +56,16 @@ export function Kiosk() {
 
   const startTriage = async (e) => {
     e.preventDefault();
-    if (!age || !category || !bp || !hr || !temp || !o2) return;
+    if (!age || !category) return;
 
     const intakeData = { 
       category, age, sex, allergies, medications, 
-      vitals: { bp, hr, temp, o2 } 
+      vitals: { 
+        bp: bp || 'Not recorded', 
+        hr: hr || 'Not recorded', 
+        temp: temp || 'Not recorded', 
+        o2: o2 || 'Not recorded' 
+      } 
     };
     
     const initialHistory = [intakeData];
@@ -191,19 +196,19 @@ export function Kiosk() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Blood Pressure</label>
-                    <Input type="text" placeholder="120/80" value={bp} onChange={(e) => setBp(e.target.value)} required className="font-mono" />
+                    <Input type="text" placeholder="120/80" value={bp} onChange={(e) => setBp(e.target.value)} className="font-mono" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Heart Rate (bpm)</label>
-                    <Input type="number" placeholder="75" value={hr} onChange={(e) => setHr(e.target.value)} required className="font-mono" />
+                    <Input type="number" placeholder="75" value={hr} onChange={(e) => setHr(e.target.value)} className="font-mono" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Temp (°F)</label>
-                    <Input type="number" step="0.1" placeholder="98.6" value={temp} onChange={(e) => setTemp(e.target.value)} required className="font-mono" />
+                    <Input type="number" step="0.1" placeholder="98.6" value={temp} onChange={(e) => setTemp(e.target.value)} className="font-mono" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">O2 Sat (%)</label>
-                    <Input type="number" placeholder="99" value={o2} onChange={(e) => setO2(e.target.value)} required className="font-mono" />
+                    <Input type="number" placeholder="99" value={o2} onChange={(e) => setO2(e.target.value)} className="font-mono" />
                   </div>
                 </div>
               </div>
@@ -227,10 +232,10 @@ export function Kiosk() {
 
               <Button 
                 type="submit" 
-                disabled={!age || !category || !bp || !hr || !temp || !o2} 
+                disabled={!age || !category} 
                 className="w-full h-16 text-xl mt-8 font-bold rounded-2xl shadow-xl hover:scale-[1.01] transition-transform"
               >
-                Start Akinator Triage
+                Start AI Triage
               </Button>
             </form>
           </Card>

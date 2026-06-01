@@ -154,7 +154,7 @@ export function TokenReview() {
                 
                 {/* Q&A Analysis */}
                 <div className="p-6 space-y-4">
-                  <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-4">Follow-up Analysis (Clinical Graph)</h3>
+                  <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-4">Follow-up Analysis (Clinical Q&A)</h3>
                   <div className="space-y-3">
                     {summary.analysis.map((item, idx) => (
                       <div key={idx} className="flex items-start justify-between bg-background p-4 rounded-xl border border-white/5 shadow-sm hover:border-primary/20 transition-colors">
@@ -170,6 +170,19 @@ export function TokenReview() {
                     ))}
                   </div>
                 </div>
+
+                {/* JUNIOR DOCTOR VERDICT */}
+                {summary.verdict && (
+                  <div className="p-6 bg-primary/10 border-t border-primary/20">
+                    <h3 className="text-sm font-black text-primary uppercase tracking-widest mb-3 flex items-center">
+                      <Stethoscope className="w-4 h-4 mr-2" />
+                      Junior Doctor AI Verdict & DDx
+                    </h3>
+                    <p className="text-lg leading-relaxed font-medium text-foreground bg-background/50 p-6 rounded-xl border border-primary/10 shadow-inner">
+                      {summary.verdict}
+                    </p>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="p-12 text-center">
