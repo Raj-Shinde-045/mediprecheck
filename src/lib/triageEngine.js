@@ -23,25 +23,29 @@ export async function generateNextQuestion(history) {
     transcript += `Q: ${history[i].question}\nA: ${history[i].answer}\n`;
   }
 
+  const isFirstQuestion = history.length === 1;
+
   const systemPrompt = `You are an expert clinical triage AI. Your job is to ask ONE highly professional, clinical follow-up question to determine the severity and nature of the patient's chief complaint.
 Patient Context: ${intake.age}yo ${intake.sex}. Complaint: ${intake.category.toUpperCase()}.
 Vitals: BP ${intake.vitals.bp}, HR ${intake.vitals.hr}, Temp ${intake.vitals.temp}, O2 ${intake.vitals.o2}.
 Allergies: ${intake.allergies}. Meds: ${intake.medications}.
 
 Previous Questions:
-${transcript}
+${transcript ? transcript : "None yet. This is the first question."}
 
 Instructions:
 1. Ask exactly ONE follow-up question.
-2. Prioritize ruling out IMMEDIATE life-threatening conditions first (e.g., if chest pain, ask about radiation or diaphoresis).
-3. Keep the question concise and patient-friendly but clinically precise.
+2. ${isFirstQuestion 
+  ? "CRITICAL: Because this is the VERY FIRST question, DO NOT ask Yes/No red-flag questions yet. Your goal is to narrow down the chief complaint. Ask a clarifying multiple-choice question to pinpoint the exact location, type, or primary nature of the symptom. Provide 3 to 4 specific symptom options based on the category (e.g., for ENT: 'Ear pain', 'Sore throat', 'Sinus pressure', etc.)."
+  : "Now that the primary symptom is established, prioritize ruling out IMMEDIATE life-threatening conditions or gauging severity (e.g., if chest pain, ask about radiation or diaphoresis). You can use Yes/No or specific symptom descriptors."}
+3. Keep the question concise, empathetic, and patient-friendly.
 
 Output ONLY a JSON object in this exact format:
 {
   "question": "The professional medical question to ask",
-  "options": ["Yes", "No", "Not sure"]
+  "options": ["Option 1", "Option 2", "Option 3"] // limit to 2-4 short options
 }
-Limit options to exactly 3 short answers. Do not output any markdown or explanation, just the raw JSON object.`;
+Do not output any markdown or explanation, just the raw JSON object.`;
 
   try {
     const chatCompletion = await groq.chat.completions.create({
@@ -93,6 +97,8 @@ Analyze the transcript and generate a structured JSON output with the following 
   "analysis": [
     {"question": "Q1", "answer": "A1"}
   ],
+  "riskLevel": "Low", // Evaluate the transcript and vitals. Value MUST be one of: "Low", "Medium", "High", "Critical"
+  "redFlags": ["List any specific alarming symptoms or abnormal vitals indicating a medical emergency", "Leave array empty if no red flags are present"],
   "verdict": "Provide a concise 2-3 sentence 'Junior Doctor Verdict'. State the top 3 differential diagnoses (DDx) based on the symptoms and vitals. Highlight any immediate red flags. CRITICAL INSTRUCTION: You MUST wrap ONLY the specific Differential Diagnoses in **double asterisks** so they stand out (e.g. **Pulmonary Embolism**, **Pneumonia**). Do NOT highlight common symptoms like 'cough' or 'chest pain'. Over-highlighting ruins readability."
 }
 Output ONLY the raw JSON object.`;
@@ -113,6 +119,8 @@ Output ONLY the raw JSON object.`;
       patientDetails: `${intake.age} year-old ${intake.sex}`,
       chiefComplaint: intake.category.toUpperCase(),
       analysis: analysisArray,
+      riskLevel: "Unknown",
+      redFlags: ["System Error - Needs Manual Triage"],
       verdict: "AI Error: Could not generate differential diagnosis due to API failure."
     };
   }

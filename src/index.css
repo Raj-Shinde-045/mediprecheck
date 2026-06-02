@@ -4,65 +4,67 @@
 
 @layer base {
   :root {
+    /* Premium Light Mode */
     --background: 210 40% 98%;
-    --foreground: 222.2 84% 4.9%;
-
+    --foreground: 222 47% 11%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
+    --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
-
-    --radius: 0.75rem;
+    --popover-foreground: 222 47% 11%;
+    
+    /* Vibrant Health-Tech Teal/Blue */
+    --primary: 199 89% 48%; 
+    --primary-foreground: 0 0% 100%;
+    
+    --secondary: 214 32% 91%;
+    --secondary-foreground: 222 47% 11%;
+    
+    --muted: 214 32% 91%;
+    --muted-foreground: 215 16% 47%;
+    
+    --accent: 214 32% 91%;
+    --accent-foreground: 222 47% 11%;
+    
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 199 89% 48%;
+    --radius: 1rem;
   }
 
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
+  /* Force dark mode for a premium tech feel, or allow toggle. We default to dark mode for the premium look in this overhaul. */
+  .dark, :root {
+    /* Deep Rich Slate/Navy */
+    --background: 224 71% 4%;
+    --foreground: 213 31% 91%;
+    
+    --card: 224 71% 4%;
+    --card-foreground: 213 31% 91%;
+    
+    --popover: 224 71% 4%;
+    --popover-foreground: 213 31% 91%;
+    
+    /* Glowing Neon Cyan/Teal */
+    --primary: 190 90% 50%;
+    --primary-foreground: 224 71% 4%;
+    
+    --secondary: 222 47% 11%;
     --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
+    
+    --muted: 223 47% 11%;
+    --muted-foreground: 215 20% 65%;
+    
+    --accent: 223 47% 11%;
     --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
+    
+    --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    
+    --border: 216 34% 17%;
+    --input: 216 34% 17%;
+    --ring: 190 90% 50%;
   }
 }
 
@@ -71,48 +73,57 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
+    /* Subtle background texture/gradient for extreme premium feel */
+    background-image: 
+      radial-gradient(at 0% 0%, hsla(190, 90%, 50%, 0.05) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, hsla(220, 100%, 50%, 0.05) 0px, transparent 50%);
+    background-attachment: fixed;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading tracking-tight;
   }
 }
 
 @layer components {
-  /* Glassmorphism */
+  /* Enhanced Glassmorphism */
   .glass {
-    @apply bg-white/70 dark:bg-black/70 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg;
+    @apply bg-white/5 dark:bg-black/20 backdrop-blur-xl border border-white/10 dark:border-white/5 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)];
   }
   
   .glass-card {
-    @apply glass rounded-xl p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+    @apply glass rounded-2xl p-6 transition-all duration-500 hover:shadow-[0_12px_40px_0_rgba(0,0,0,0.4)] hover:-translate-y-2 hover:border-white/20;
   }
 
   /* Micro-animations */
   .btn-hover {
-    @apply transition-transform active:scale-95 duration-200 hover:shadow-md;
+    @apply transition-all duration-300 active:scale-95 hover:shadow-[0_0_20px_hsla(var(--primary),0.4)];
   }
 
   /* Inputs */
   .input-field {
-    @apply flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-shadow duration-200;
+    @apply flex h-12 w-full rounded-xl border border-white/10 bg-black/20 px-4 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-300 hover:border-white/20 focus:bg-black/40;
   }
 
   /* Buttons */
   .btn-primary {
-    @apply inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 btn-hover;
+    @apply inline-flex items-center justify-center rounded-xl text-base font-bold ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-12 px-6 py-2 btn-hover shadow-[0_0_15px_hsla(var(--primary),0.3)];
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 px-4 py-2 btn-hover;
+    @apply inline-flex items-center justify-center rounded-xl text-base font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground hover:bg-secondary/80 h-12 px-6 py-2 btn-hover;
   }
   
   .btn-outline {
-    @apply inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 btn-hover;
+    @apply inline-flex items-center justify-center rounded-xl text-base font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-white/10 bg-transparent hover:bg-white/5 h-12 px-6 py-2 btn-hover;
   }
 }
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -120,10 +131,10 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted-foreground));
+  background: hsla(0, 0%, 100%, 0.1);
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--foreground) / 0.5);
+  background: hsla(0, 0%, 100%, 0.2);
 }
