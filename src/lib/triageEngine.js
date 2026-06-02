@@ -28,7 +28,6 @@ export async function generateNextQuestion(history) {
   const systemPrompt = `You are an expert clinical triage AI. Your job is to ask ONE highly professional, clinical follow-up question to determine the severity and nature of the patient's chief complaint.
 Patient Context: ${intake.age}yo ${intake.sex}. Complaint: ${intake.category.toUpperCase()}.
 Vitals: BP ${intake.vitals.bp}, HR ${intake.vitals.hr}, Temp ${intake.vitals.temp}, O2 ${intake.vitals.o2}.
-Allergies: ${intake.allergies}. Meds: ${intake.medications}.
 
 Previous Questions:
 ${transcript ? transcript : "None yet. This is the first question."}
@@ -103,7 +102,13 @@ Analyze the transcript and generate a structured JSON output with the following 
   "dietaryAdvice": {
     "toEat": ["List 2-3 specific foods or dietary habits the patient SHOULD consume to aid recovery based on the suspected condition"],
     "toAvoid": ["List 2-3 specific foods or habits the patient SHOULD AVOID (e.g., spicy foods for acid reflux, dairy for certain ENT issues)"]
-  }
+  },
+  "diseaseProgression": [
+    { "day": 1, "prediction": "Prediction for Day 1 if left untreated..." },
+    { "day": 2, "prediction": "Prediction for Day 2 if left untreated..." },
+    { "day": 3, "prediction": "Prediction for Day 3 if left untreated..." },
+    { "day": 4, "prediction": "Prediction for Day 4 if left untreated..." }
+  ]
 }
 Output ONLY the raw JSON object.`;
 

@@ -73,6 +73,10 @@ export function DoctorQueue() {
     navigate(`/doctor/review/${token}?doc=${doctorId}`);
   };
 
+  const handleViewRecord = (token) => {
+    navigate(`/doctor/review/${token}?doc=${doctorId}`);
+  };
+
   const handleToggleHold = async (token, currentStatus) => {
     const newStatus = currentStatus === 'on-hold' ? 'ready' : 'on-hold';
     const tokenRef = ref(db, `clinics/${currentUser.uid}/doctors/${doctorId}/queue/${token}`);
@@ -215,12 +219,21 @@ export function DoctorQueue() {
                         </Button>
                       )}
                       
-                      {patient.status !== 'completed' && (
+                      {patient.status !== 'completed' ? (
                         <Button 
                           onClick={() => handleStartConsult(patient.token)}
                           className="h-14 px-8 text-lg font-bold rounded-xl shadow-lg opacity-90 group-hover:opacity-100 transition-all hover:scale-105"
                         >
                           Review Triage
+                          <ChevronRight className="w-5 h-5 ml-2" />
+                        </Button>
+                      ) : (
+                        <Button 
+                          variant="secondary"
+                          onClick={() => handleViewRecord(patient.token)}
+                          className="h-14 px-8 text-lg font-bold rounded-xl shadow-lg transition-all hover:scale-105 bg-white/10 hover:bg-white/20 text-white"
+                        >
+                          View Record
                           <ChevronRight className="w-5 h-5 ml-2" />
                         </Button>
                       )}

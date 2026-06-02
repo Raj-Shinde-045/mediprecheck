@@ -26,8 +26,6 @@ export function Kiosk() {
   const [doctorId, setDoctorId] = useState('');
   const [age, setAge] = useState('');
   const [sex, setSex] = useState('Male');
-  const [allergies, setAllergies] = useState('None');
-  const [medications, setMedications] = useState('None');
   
   // Vitals
   const [bp, setBp] = useState('');
@@ -79,7 +77,7 @@ export function Kiosk() {
     if (!age || !category) return;
 
     const intakeData = { 
-      category, age, sex, allergies, medications, 
+      category, age, sex, 
       vitals: { 
         bp: bp || 'Not recorded', 
         hr: hr || 'Not recorded', 
@@ -185,7 +183,7 @@ export function Kiosk() {
             <form onSubmit={startTriage} className="space-y-8">
               
               {/* Demographics & History */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Age</label>
                   <Input type="number" placeholder="45" value={age} onChange={(e) => setAge(e.target.value)} required />
@@ -196,14 +194,6 @@ export function Kiosk() {
                     <option>Male</option>
                     <option>Female</option>
                   </select>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Known Allergies</label>
-                  <Input type="text" value={allergies} onChange={(e) => setAllergies(e.target.value)} />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Current Meds</label>
-                  <Input type="text" value={medications} onChange={(e) => setMedications(e.target.value)} />
                 </div>
               </div>
 
