@@ -12,6 +12,7 @@ export function DoctorQueue() {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
   const [doctorId, setDoctorId] = useState('');
+  const [isDocDropdownOpen, setIsDocDropdownOpen] = useState(false);
   const [doctors, setDoctors] = useState([]);
   const [queue, setQueue] = useState([]);
   
@@ -28,7 +29,11 @@ export function DoctorQueue() {
       const snapshot = await get(docsRef);
       if (snapshot.exists()) {
         const data = snapshot.val();
-        const docsList = Object.keys(data).map(key => ({ id: key, name: data[key].name }));
+        const docsList = Object.keys(data).map(key => ({ 
+          id: key, 
+          name: data[key].name,
+          profilePic: data[key].profilePic || '' 
+        }));
         setDoctors(docsList);
         if (docsList.length > 0) setDoctorId(docsList[0].id);
       }
@@ -141,17 +146,49 @@ export function DoctorQueue() {
             />
           </div>
           
-          <div className="bg-background/80 p-2 rounded-xl border border-white/10 flex items-center shadow-lg">
-            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-2 mr-3">Doctor:</label>
-            <select 
-              className="bg-primary/20 border-none text-primary font-bold text-lg rounded-lg px-4 py-2"
-              value={doctorId}
-              onChange={(e) => setDoctorId(e.target.value)}
-            >
-              {doctors.map(d => (
-                <option key={d.id} value={d.id}>{d.name}</option>
-              ))}
-            </select>
+          <div className="bg-background/80 p-2 rounded-xl border border-white/10 flex items-center shadow-lg relative">
+            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-2 mr-3">Viewing Queue For:</label>
+            
+            <div className="relative inline-block text-left min-w-[200px]">
+              <div 
+                onClick={() => setIsDocDropdownOpen(!isDocDropdownOpen)}
+                className="flex items-center justify-between bg-primary/20 text-primary font-bold text-lg rounded-lg px-4 py-2 cursor-pointer hover:bg-primary/30 transition-colors"
+              >
+                <div className="flex items-center">
+                  {doctors.find(d => d.id === doctorId)?.profilePic ? (
+                    <img src={doctors.find(d => d.id === doctorId)?.profilePic} alt="Doc" className="w-6 h-6 rounded-full object-cover mr-2" />
+                  ) : (
+                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs mr-2">
+                      {doctors.find(d => d.id === doctorId)?.name?.replace('Dr. ', '').charAt(0)?.toUpperCase()}
+                    </div>
+                  )}
+                  <span>{doctors.find(d => d.id === doctorId)?.name || 'Select Doctor'}</span>
+                </div>
+                <span className="ml-2 text-sm opacity-70">▼</span>
+              </div>
+
+              {isDocDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-full bg-background border border-white/10 rounded-xl shadow-2xl z-50 max-h-[300px] overflow-y-auto">
+                  {doctors.map(doc => (
+                    <div 
+                      key={doc.id}
+                      onClick={() => { setDoctorId(doc.id); setIsDocDropdownOpen(false); }}
+                      className={`flex items-center p-3 cursor-pointer transition-colors ${doctorId === doc.id ? 'bg-primary/20 text-primary' : 'hover:bg-white/5'}`}
+                    >
+                      {doc.profilePic ? (
+                        <img src={doc.profilePic} alt={doc.name} className="w-6 h-6 rounded-full object-cover mr-2" />
+                      ) : (
+                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs mr-2">
+                          {doc.name.replace('Dr. ', '').charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                      <span className="font-bold text-sm">{doc.name}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
           </div>
         </div>
       </div>
