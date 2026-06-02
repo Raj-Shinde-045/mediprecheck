@@ -99,7 +99,11 @@ Analyze the transcript and generate a structured JSON output with the following 
   ],
   "riskLevel": "Low", // Evaluate the transcript and vitals. Value MUST be one of: "Low", "Medium", "High", "Critical"
   "redFlags": ["List any specific alarming symptoms or abnormal vitals indicating a medical emergency", "Leave array empty if no red flags are present"],
-  "verdict": "Provide a concise 2-3 sentence 'Junior Doctor Verdict'. State the top 3 differential diagnoses (DDx) based on the symptoms and vitals. Highlight any immediate red flags. CRITICAL INSTRUCTION: You MUST wrap ONLY the specific Differential Diagnoses in **double asterisks** so they stand out (e.g. **Pulmonary Embolism**, **Pneumonia**). Do NOT highlight common symptoms like 'cough' or 'chest pain'. Over-highlighting ruins readability."
+  "verdict": "Provide a concise 2-3 sentence 'Junior Doctor Verdict'. State the top 3 differential diagnoses (DDx) based on the symptoms and vitals. Highlight any immediate red flags. CRITICAL INSTRUCTION: You MUST wrap ONLY the specific Differential Diagnoses in **double asterisks** so they stand out (e.g. **Pulmonary Embolism**, **Pneumonia**).",
+  "dietaryAdvice": {
+    "toEat": ["List 2-3 specific foods or dietary habits the patient SHOULD consume to aid recovery based on the suspected condition"],
+    "toAvoid": ["List 2-3 specific foods or habits the patient SHOULD AVOID (e.g., spicy foods for acid reflux, dairy for certain ENT issues)"]
+  }
 }
 Output ONLY the raw JSON object.`;
 

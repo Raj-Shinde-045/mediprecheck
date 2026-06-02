@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
-import { ArrowLeft, Stethoscope, CheckCircle2, Activity, ShieldAlert, Pill } from 'lucide-react';
+import { ArrowLeft, Stethoscope, CheckCircle2, Activity, ShieldAlert, Pill, Utensils, AlertOctagon, Apple } from 'lucide-react';
 import { db } from '../../lib/firebase';
 import { ref, get, update } from 'firebase/database';
 import { motion } from 'framer-motion';
@@ -256,6 +256,41 @@ export function TokenReview() {
                     <p className="text-lg leading-relaxed font-medium text-foreground bg-background/50 p-6 rounded-xl border border-primary/10 shadow-inner">
                       {renderMarkdown(summary.verdict)}
                     </p>
+                  </div>
+                )}
+
+                {/* DIETARY ADVICE */}
+                {summary.dietaryAdvice && (
+                  <div className="p-6 bg-background/50 border-t border-white/5 grid md:grid-cols-2 gap-6">
+                    <div className="space-y-3">
+                      <h3 className="text-sm font-black text-green-500 uppercase tracking-widest flex items-center">
+                        <Apple className="w-4 h-4 mr-2" />
+                        Recommended to Consume
+                      </h3>
+                      <ul className="space-y-2 bg-green-500/10 p-4 rounded-xl border border-green-500/20">
+                        {summary.dietaryAdvice.toEat.map((item, idx) => (
+                          <li key={idx} className="flex items-start text-green-100 font-medium text-sm">
+                            <span className="mr-2 text-green-500 font-black">•</span>
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <h3 className="text-sm font-black text-red-500 uppercase tracking-widest flex items-center">
+                        <AlertOctagon className="w-4 h-4 mr-2" />
+                        Recommended to Avoid
+                      </h3>
+                      <ul className="space-y-2 bg-red-500/10 p-4 rounded-xl border border-red-500/20">
+                        {summary.dietaryAdvice.toAvoid.map((item, idx) => (
+                          <li key={idx} className="flex items-start text-red-100 font-medium text-sm">
+                            <span className="mr-2 text-red-500 font-black">•</span>
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
                 )}
               </div>
