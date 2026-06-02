@@ -52,9 +52,17 @@ export function DoctorQueue() {
         }));
         
         // Sort logic: 'ready' (1) -> 'in-consult' (2) -> 'on-hold' (3) -> 'completed' (4)
+        // If statuses are equal, sort by Token Number (descending) so most recent is on top
         queueList.sort((a, b) => {
           const rank = { 'ready': 1, 'in-consult': 2, 'on-hold': 3, 'completed': 4 };
-          return (rank[a.status] || 99) - (rank[b.status] || 99);
+          const rankDiff = (rank[a.status] || 99) - (rank[b.status] || 99);
+          
+          if (rankDiff !== 0) return rankDiff;
+          
+          // Secondary sort: Token number descending
+          const numA = parseInt(a.token.split('-')[1] || 0);
+          const numB = parseInt(b.token.split('-')[1] || 0);
+          return numB - numA;
         });
         
         setQueue(queueList);

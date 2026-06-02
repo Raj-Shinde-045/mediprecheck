@@ -36,13 +36,13 @@ Instructions:
 1. Ask exactly ONE follow-up question.
 2. ${isFirstQuestion 
   ? "CRITICAL: Because this is the VERY FIRST question, DO NOT ask Yes/No red-flag questions yet. Your goal is to narrow down the chief complaint. Ask a clarifying multiple-choice question to pinpoint the exact location, type, or primary nature of the symptom. Provide 3 to 4 specific symptom options based on the category (e.g., for ENT: 'Ear pain', 'Sore throat', 'Sinus pressure', etc.)."
-  : "Now that the primary symptom is established, prioritize ruling out IMMEDIATE life-threatening conditions or gauging severity (e.g., if chest pain, ask about radiation or diaphoresis). You can use Yes/No or specific symptom descriptors."}
-3. Keep the question concise, empathetic, and patient-friendly.
+  : "Now that the primary symptom is established, prioritize ruling out IMMEDIATE life-threatening conditions or gauging severity (e.g., if chest pain, ask about radiation or shortness of breath). You can use Yes/No or specific symptom descriptors."}
+3. CRITICAL: The patient is NOT a doctor. You MUST translate all medical concepts into extremely simple, 5th-grade layman's terms. Do not use words like 'diaphoresis' (use 'sweating'), 'syncope' (use 'fainting'), or 'dyspnea' (use 'trouble breathing'). Make the questions sound like a friendly, conversational nurse.
 
 Output ONLY a JSON object in this exact format:
 {
-  "question": "The professional medical question to ask",
-  "options": ["Option 1", "Option 2", "Option 3"] // limit to 2-4 short options
+  "question": "The extremely simple, patient-friendly question to ask",
+  "options": ["Simple Option 1", "Simple Option 2", "Simple Option 3"] // limit to 2-4 short options
 }
 Do not output any markdown or explanation, just the raw JSON object.`;
 
