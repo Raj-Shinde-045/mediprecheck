@@ -32,6 +32,7 @@
     --input: 214 32% 91%;
     --ring: 199 89% 48%;
     --radius: 1rem;
+    --text-light: 222 47% 11%;
   }
 
   /* Dark mode - activated when .dark class is present */
@@ -84,6 +85,18 @@
   
   h1, h2, h3, h4, h5, h6 {
     @apply font-heading tracking-tight;
+  }
+
+  /* Light mode enhancements */
+  :not(.dark) {
+    /* Better button backgrounds for light mode */
+    .bg-foreground\/10 {
+      @apply bg-foreground/20;
+    }
+    
+    .hover\:bg-foreground\/20:hover {
+      @apply bg-foreground/30;
+    }
   }
 }
 
