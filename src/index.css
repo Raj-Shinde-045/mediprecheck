@@ -34,8 +34,8 @@
     --radius: 1rem;
   }
 
-  /* Force dark mode for a premium tech feel, or allow toggle. We default to dark mode for the premium look in this overhaul. */
-  .dark, :root {
+  /* Dark mode - activated when .dark class is present */
+  .dark {
     /* Deep Rich Slate/Navy */
     --background: 224 71% 4%;
     --foreground: 213 31% 91%;
@@ -73,7 +73,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply bg-background text-foreground font-sans antialiased transition-colors duration-300;
     font-feature-settings: "rlig" 1, "calt" 1;
     /* Subtle background texture/gradient for extreme premium feel */
     background-image: 
@@ -90,11 +90,11 @@
 @layer components {
   /* Enhanced Glassmorphism */
   .glass {
-    @apply bg-white/5 dark:bg-black/20 backdrop-blur-xl border border-white/10 dark:border-white/5 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)];
+    @apply bg-white/5 dark:bg-black/20 backdrop-blur-xl border border-white/10 dark:border-white/5 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.5)];
   }
   
   .glass-card {
-    @apply glass rounded-2xl p-6 transition-all duration-500 hover:shadow-[0_12px_40px_0_rgba(0,0,0,0.4)] hover:-translate-y-2 hover:border-white/20;
+    @apply glass rounded-2xl p-6 transition-all duration-500 hover:shadow-[0_12px_40px_0_rgba(0,0,0,0.4)] dark:hover:shadow-[0_12px_40px_0_rgba(0,0,0,0.6)] hover:-translate-y-2 hover:border-white/20 dark:hover:border-white/10;
   }
 
   /* Micro-animations */
@@ -104,7 +104,7 @@
 
   /* Inputs */
   .input-field {
-    @apply flex h-12 w-full rounded-xl border border-white/10 bg-black/20 px-4 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-300 hover:border-white/20 focus:bg-black/40;
+    @apply flex h-12 w-full rounded-xl border border-white/10 bg-black/20 dark:bg-black/40 px-4 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-300 hover:border-white/20 focus:bg-black/40 dark:focus:bg-black/60;
   }
 
   /* Buttons */

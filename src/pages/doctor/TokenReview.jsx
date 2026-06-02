@@ -146,7 +146,7 @@ export function TokenReview() {
               </div>
             </div>
             {summary.riskLevel === 'Critical' && (
-              <div className="bg-red-600 text-white px-6 py-3 rounded-xl font-bold text-sm tracking-widest uppercase animate-pulse shadow-[0_0_20px_rgba(220,38,38,0.6)] shrink-0 text-center">
+              <div className="bg-red-600 text-foreground dark:text-white px-6 py-3 rounded-xl font-bold text-sm tracking-widest uppercase animate-pulse shadow-[0_0_20px_rgba(220,38,38,0.6)] shrink-0 text-center">
                 Immediate Attention
               </div>
             )}
