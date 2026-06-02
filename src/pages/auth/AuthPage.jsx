@@ -106,7 +106,7 @@ export function AuthPage() {
             <button 
               type="submit" 
               disabled={loading}
-              className="w-full h-12 rounded-xl font-bold uppercase tracking-wider text-sm flex items-center justify-center gap-2 transition-all shadow-lg text-white bg-primary hover:bg-blue-500 shadow-primary/20"
+              className="w-full h-12 rounded-xl font-bold uppercase tracking-wider text-sm flex items-center justify-center gap-2 transition-all shadow-lg text-foreground dark:text-white bg-primary hover:bg-blue-500 shadow-primary/20"
             >
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : isLogin ? <><LogIn className="w-5 h-5" /> Authenticate</> : <><Building2 className="w-5 h-5" /> Initialize Clinic</>}
             </button>
@@ -118,7 +118,7 @@ export function AuthPage() {
                 <div className="w-full border-t border-white/10"></div>
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-[#0b1019] px-2 text-muted-foreground font-bold tracking-widest">Or continue with</span>
+                <span className="bg-background px-2 text-muted-foreground font-bold tracking-widest">Or continue with</span>
               </div>
             </div>
 
@@ -137,7 +137,7 @@ export function AuthPage() {
                 }
               }}
               disabled={loading}
-              className="w-full mt-6 h-12 rounded-xl font-bold uppercase tracking-wider text-sm flex items-center justify-center gap-2 transition-all border border-white/10 bg-white/5 hover:bg-white/10 text-white"
+              className="w-full mt-6 h-12 rounded-xl font-bold uppercase tracking-wider text-sm flex items-center justify-center gap-2 transition-all border border-foreground/10 dark:border-white/10 bg-foreground/5 dark:bg-white/5 hover:bg-foreground/10 dark:hover:bg-white/10 text-foreground dark:text-white"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -153,7 +153,7 @@ export function AuthPage() {
             <button 
               onClick={() => setIsLogin(!isLogin)}
               type="button"
-              className="text-sm font-bold text-muted-foreground hover:text-white transition-colors underline underline-offset-4"
+              className="text-sm font-bold text-muted-foreground hover:text-foreground dark:hover:text-white transition-colors underline underline-offset-4"
             >
               {isLogin ? "Register a new Clinic?" : "Already registered? Authenticate"}
             </button>

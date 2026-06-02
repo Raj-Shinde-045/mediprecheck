@@ -89,7 +89,7 @@ export function TokenReview() {
             <p className="text-muted-foreground text-lg">Patient Triage Review</p>
           </div>
         </div>
-        <Button onClick={handleMarkConsulted} className="h-12 px-6 text-lg font-bold bg-green-600 hover:bg-green-700 text-white rounded-xl shadow-lg hover:scale-105 transition-all">
+        <Button onClick={handleMarkConsulted} className="h-12 px-6 text-lg font-bold bg-green-600 hover:bg-green-700 text-foreground dark:text-white rounded-xl shadow-lg hover:scale-105 transition-all">
           <CheckCircle2 className="w-5 h-5 mr-2" />
           Mark as Consulted
         </Button>
@@ -131,7 +131,7 @@ export function TokenReview() {
               </div>
             </div>
             {summary.riskLevel === 'Critical' && (
-              <div className="bg-red-600 text-white px-6 py-3 rounded-xl font-bold text-sm tracking-widest uppercase animate-pulse shadow-[0_0_20px_rgba(220,38,38,0.6)] shrink-0 text-center">
+              <div className="bg-red-600 text-foreground dark:text-white px-6 py-3 rounded-xl font-bold text-sm tracking-widest uppercase animate-pulse shadow-[0_0_20px_rgba(220,38,38,0.6)] shrink-0 text-center">
                 Immediate Attention
               </div>
             )}

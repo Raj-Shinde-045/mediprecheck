@@ -61,7 +61,7 @@ export function RoleSelector() {
           >
             <ActivitySquare className="h-10 w-10 text-primary" />
           </motion.div>
-          <h1 className="text-6xl md:text-8xl font-black tracking-tighter mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60 drop-shadow-sm">
+          <h1 className="text-6xl md:text-8xl font-black tracking-tighter mb-6 bg-clip-text text-transparent bg-gradient-to-b from-foreground dark:from-white to-foreground/60 dark:to-white/60 drop-shadow-sm">
             The Future of <br className="hidden md:block" /> Patient Intake.
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground font-medium max-w-3xl mx-auto leading-relaxed">
@@ -79,14 +79,14 @@ export function RoleSelector() {
             className="group relative cursor-pointer"
           >
             <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-blue-600/30 rounded-[2.5rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-            <div className="relative h-full bg-white/5 backdrop-blur-2xl border border-white/10 p-10 rounded-[2.5rem] hover:border-primary/50 transition-all duration-500 shadow-2xl overflow-hidden flex flex-col">
+            <div className="relative h-full bg-white/5 dark:bg-white/5 backdrop-blur-2xl border border-foreground/10 dark:border-white/10 p-10 rounded-[2.5rem] hover:border-primary/50 transition-all duration-500 shadow-2xl overflow-hidden flex flex-col">
               <div className="absolute -top-10 -right-10 p-4 opacity-5 group-hover:opacity-10 transition-opacity duration-500 group-hover:rotate-12 group-hover:scale-110">
                 <ScanFace className="w-64 h-64" />
               </div>
-              <div className="bg-primary/20 w-20 h-20 rounded-3xl flex items-center justify-center mb-8 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-500 shadow-inner border border-white/10">
-                <ScanFace className="h-10 w-10 text-primary group-hover:text-white" />
+              <div className="bg-primary/20 w-20 h-20 rounded-3xl flex items-center justify-center mb-8 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-500 shadow-inner border border-foreground/10 dark:border-white/10">
+                <ScanFace className="h-10 w-10 text-primary group-hover:text-foreground dark:group-hover:text-white" />
               </div>
-              <h2 className="text-4xl font-bold mb-4 flex items-center gap-3 text-white">
+              <h2 className="text-4xl font-bold mb-4 flex items-center gap-3 text-foreground dark:text-white">
                 Patient Kiosk <Sparkles className="w-6 h-6 text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </h2>
               <p className="text-muted-foreground text-lg leading-relaxed flex-grow">
@@ -107,14 +107,14 @@ export function RoleSelector() {
             className="group relative cursor-pointer"
           >
             <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/30 to-teal-600/30 rounded-[2.5rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-            <div className="relative h-full bg-white/5 backdrop-blur-2xl border border-white/10 p-10 rounded-[2.5rem] hover:border-emerald-500/50 transition-all duration-500 shadow-2xl overflow-hidden flex flex-col">
+            <div className="relative h-full bg-white/5 dark:bg-white/5 backdrop-blur-2xl border border-foreground/10 dark:border-white/10 p-10 rounded-[2.5rem] hover:border-emerald-500/50 transition-all duration-500 shadow-2xl overflow-hidden flex flex-col">
               <div className="absolute -top-10 -right-10 p-4 opacity-5 group-hover:opacity-10 transition-opacity duration-500 group-hover:rotate-12 group-hover:scale-110">
                 <Stethoscope className="w-64 h-64" />
               </div>
-              <div className="bg-emerald-500/20 w-20 h-20 rounded-3xl flex items-center justify-center mb-8 group-hover:bg-emerald-500 group-hover:text-white transition-all duration-500 shadow-inner border border-white/10">
-                <Stethoscope className="h-10 w-10 text-emerald-500 group-hover:text-white" />
+              <div className="bg-emerald-500/20 w-20 h-20 rounded-3xl flex items-center justify-center mb-8 group-hover:bg-emerald-500 group-hover:text-foreground dark:group-hover:text-white transition-all duration-500 shadow-inner border border-foreground/10 dark:border-white/10">
+                <Stethoscope className="h-10 w-10 text-emerald-500 group-hover:text-foreground dark:group-hover:text-white" />
               </div>
-              <h2 className="text-4xl font-bold mb-4 text-white">
+              <h2 className="text-4xl font-bold mb-4 text-foreground dark:text-white">
                 Doctor Review
               </h2>
               <p className="text-muted-foreground text-lg leading-relaxed flex-grow">
