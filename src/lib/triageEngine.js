@@ -35,9 +35,10 @@ ${transcript ? transcript : "None yet. This is the first question."}
 Instructions:
 1. Ask exactly ONE follow-up question.
 2. ${isFirstQuestion 
-  ? "CRITICAL: Because this is the VERY FIRST question, DO NOT ask Yes/No red-flag questions yet. Your goal is to narrow down the chief complaint. Ask a clarifying multiple-choice question to pinpoint the exact location, type, or primary nature of the symptom. Provide 3 to 4 specific symptom options based on the category (e.g., for ENT: 'Ear pain', 'Sore throat', 'Sinus pressure', etc.)."
-  : "Now that the primary symptom is established, prioritize ruling out IMMEDIATE life-threatening conditions or gauging severity (e.g., if chest pain, ask about radiation or shortness of breath). You can use Yes/No or specific symptom descriptors."}
-3. CRITICAL: The patient is NOT a doctor. You MUST translate all medical concepts into extremely simple, 5th-grade layman's terms. Do not use words like 'diaphoresis' (use 'sweating'), 'syncope' (use 'fainting'), or 'dyspnea' (use 'trouble breathing'). Make the questions sound like a friendly, conversational nurse.
+  ? "CRITICAL: Because this is the VERY FIRST question, DO NOT ask Yes/No red-flag questions yet. Your goal is to narrow down the chief complaint. Ask a clarifying multiple-choice question to pinpoint the exact location, type, or primary nature of the symptom. Provide 3 to 4 specific symptom options based on the category."
+  : "Now that the primary symptom is established, prioritize ruling out IMMEDIATE life-threatening conditions or gauging severity. You can use Yes/No or specific symptom descriptors."}
+3. CRITICAL: The patient is NOT a doctor. You MUST translate all medical concepts into extremely simple, 5th-grade layman's terms. Do not use words like 'diaphoresis' (use 'sweating'), 'syncope' (use 'fainting'), or 'dyspnea' (use 'trouble breathing').
+4. CRITICAL AVOIDANCE: Do NOT ask overly alarming or dramatic questions (e.g., "Do you feel like you might pass out?" or "Are you dying?"). Do not jump to extremely rare worst-case scenarios unless the patient's vitals or age strictly warrant it (e.g., do not ask a 20yo with neck pain if they are having a heart attack). Keep the tone calm, friendly, and conversational.
 
 Output ONLY a JSON object in this exact format:
 {
