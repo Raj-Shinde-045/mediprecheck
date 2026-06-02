@@ -103,8 +103,8 @@ export function Kiosk() {
     if (answer === "Finish Triage") {
       setIsSubmitting(true);
       try {
-        // 1. Generate Daily Token (DDMMYYYY-N)
-        const newToken = await generateToken();
+        // 1. Generate Daily Token (DDMMYYYY-N) scoped to specific doctor
+        const newToken = await generateToken(currentUser.uid, doctorId);
         setToken(newToken);
 
         // 2. Generate final summary

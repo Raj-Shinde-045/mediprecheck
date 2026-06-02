@@ -4,7 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Ca
 import { Button } from '../../components/ui/Button';
 import { Users, Clock, ChevronRight, Activity, Calendar } from 'lucide-react';
 import { db } from '../../lib/firebase';
-import { ref, onValue, update, get } from 'firebase/database';
+import { ref, onValue, update, get, remove } from 'firebase/database';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -96,6 +96,18 @@ export function DoctorQueue() {
     await update(tokenRef, { status: newStatus });
   };
 
+  const handleClearQueue = async () => {
+    if (!confirm('Are you sure you want to delete ALL patients in this queue? This cannot be undone.')) return;
+    
+    // Delete the entire queue for this doctor
+    const queueRef = ref(db, `clinics/${currentUser.uid}/doctors/${doctorId}/queue`);
+    await remove(queueRef);
+    
+    // Delete the daily counters for this doctor so tokens reset to #1
+    const countersRef = ref(db, `clinics/${currentUser.uid}/doctors/${doctorId}/counters`);
+    await remove(countersRef);
+  };
+
   const getStatusBadge = (status) => {
     switch(status) {
       case 'ready': return <span className="bg-yellow-500/20 text-yellow-500 px-3 py-1 rounded-full text-sm font-bold uppercase tracking-wider flex items-center gap-1"><Clock className="w-3 h-3"/> Waiting</span>;
@@ -136,6 +148,14 @@ export function DoctorQueue() {
         </div>
         
         <div className="flex flex-col sm:flex-row items-center gap-4">
+          <Button 
+            variant="ghost" 
+            onClick={handleClearQueue} 
+            className="text-red-500 border border-red-500/30 hover:bg-red-500/10 font-bold px-4 rounded-xl shadow-sm"
+          >
+            Clear Queue (Test)
+          </Button>
+
           <div className="bg-background/80 p-2 rounded-xl border border-white/10 flex items-center shadow-lg">
             <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-2 mr-3">Date:</label>
             <input 
