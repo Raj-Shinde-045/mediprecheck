@@ -5,6 +5,9 @@ import { Input } from '../../components/ui/Input';
 import { Loader2, CheckCircle2, Bot, ClipboardList, Activity } from 'lucide-react';
 import { generateNextQuestion, generateSummary } from '../../lib/triageEngine';
 import { generateToken, submitPatientTriage } from '../../lib/db';
+import { db } from '../../lib/firebase';
+import { ref, get } from 'firebase/database';
+import { useAuth } from '../../contexts/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function Kiosk() {
@@ -17,8 +20,10 @@ export function Kiosk() {
   const [isFinished, setIsFinished] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const { currentUser } = useAuth();
+  
   // Receptionist Intake State
-  const [doctorId, setDoctorId] = useState('doc-smith');
+  const [doctorId, setDoctorId] = useState('');
   const [age, setAge] = useState('');
   const [sex, setSex] = useState('Male');
   const [allergies, setAllergies] = useState('None');
@@ -32,21 +37,36 @@ export function Kiosk() {
 
   const [category, setCategory] = useState('');
 
-  const doctors = [
-    { id: 'doc-smith', name: 'Dr. Sarah Smith' },
-    { id: 'doc-jones', name: 'Dr. Michael Jones' },
-  ];
+  const [doctors, setDoctors] = useState([]);
+
+  useEffect(() => {
+    async function loadDoctors() {
+      if (!currentUser) return;
+      const docsRef = ref(db, `clinics/${currentUser.uid}/doctorsList`);
+      const snapshot = await get(docsRef);
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        const docsList = Object.keys(data).map(key => ({ id: key, name: data[key].name }));
+        setDoctors(docsList);
+        if (docsList.length > 0) setDoctorId(docsList[0].id);
+      }
+    }
+    loadDoctors();
+  }, [currentUser]);
 
   const categories = [
-    { id: 'chest', label: 'Chest Pain (URGENT)' },
-    { id: 'headache', label: 'Headache / Neurological' },
-    { id: 'cough', label: 'Cough / Respiratory' },
-    { id: 'stomach', label: 'Stomach / Gastrointestinal' },
-    { id: 'fever', label: 'Fever / Systemic Infection' },
-    { id: 'msk', label: 'Joint Pain / Injury (MSK)' },
-    { id: 'ent', label: 'Ear, Nose, Throat, Eye (ENT)' },
-    { id: 'gu', label: 'Urinary / Genitourinary' },
-    { id: 'skin', label: 'Skin Rash / Dermatological' },
+    { id: 'chest', label: 'Cardiology / Chest Pain (URGENT)' },
+    { id: 'headache', label: 'Neurology / Headache' },
+    { id: 'cough', label: 'Respiratory / Breathing' },
+    { id: 'stomach', label: 'Gastrointestinal / Abdominal' },
+    { id: 'fever', label: 'Systemic Infection / Fever' },
+    { id: 'msk', label: 'Orthopedics / Joint Pain' },
+    { id: 'trauma', label: 'Trauma / Acute Injury (URGENT)' },
+    { id: 'ent', label: 'Ear, Nose, & Throat (ENT)' },
+    { id: 'eye', label: 'Ophthalmology / Vision' },
+    { id: 'gu', label: 'Genitourinary / Pelvic Pain' },
+    { id: 'skin', label: 'Dermatology / Rash' },
+    { id: 'psych', label: 'Psychiatric / Mental Health' },
     { id: 'default', label: 'Other / General Malaise' },
   ];
 
@@ -89,7 +109,7 @@ export function Kiosk() {
         const finalSummary = await generateSummary(history);
 
         // 3. Push to Firebase
-        await submitPatientTriage(doctorId, newToken, {
+        await submitPatientTriage(currentUser.uid, doctorId, newToken, {
           history,
           summary: finalSummary
         });
@@ -215,7 +235,7 @@ export function Kiosk() {
 
               <div className="space-y-3">
                 <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Chief Complaint Category</label>
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                   {categories.map(cat => (
                     <Button
                       key={cat.id}

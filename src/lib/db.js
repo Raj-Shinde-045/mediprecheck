@@ -23,8 +23,8 @@ export async function generateToken() {
 }
 
 // Push a completed patient to a specific doctor's queue
-export async function submitPatientTriage(doctorId, token, payload) {
-  const queueRef = ref(db, `doctors/${doctorId}/queue/${token}`);
+export async function submitPatientTriage(clinicId, doctorId, token, payload) {
+  const queueRef = ref(db, `clinics/${clinicId}/doctors/${doctorId}/queue/${token}`);
   await set(queueRef, {
     ...payload,
     status: 'ready',

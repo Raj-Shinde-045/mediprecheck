@@ -1,19 +1,45 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
-import { Users, Clock, ChevronRight, Activity } from 'lucide-react';
+import { Users, Clock, ChevronRight, Activity, Calendar } from 'lucide-react';
 import { db } from '../../lib/firebase';
-import { ref, onValue, update } from 'firebase/database';
+import { ref, onValue, update, get } from 'firebase/database';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '../../contexts/AuthContext';
 
 export function DoctorQueue() {
   const navigate = useNavigate();
-  const [doctorId, setDoctorId] = useState('doc-smith'); // Hardcoded default doctor for now
+  const { currentUser } = useAuth();
+  const [doctorId, setDoctorId] = useState('');
+  const [doctors, setDoctors] = useState([]);
   const [queue, setQueue] = useState([]);
+  
+  // Date picker state. Default to today in YYYY-MM-DD
+  const [selectedDate, setSelectedDate] = useState(() => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  });
 
   useEffect(() => {
-    const queueRef = ref(db, `doctors/${doctorId}/queue`);
+    async function loadDoctors() {
+      if (!currentUser) return;
+      const docsRef = ref(db, `clinics/${currentUser.uid}/doctorsList`);
+      const snapshot = await get(docsRef);
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        const docsList = Object.keys(data).map(key => ({ id: key, name: data[key].name }));
+        setDoctors(docsList);
+        if (docsList.length > 0) setDoctorId(docsList[0].id);
+      }
+    }
+    loadDoctors();
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (!currentUser || !doctorId) return;
+    
+    const queueRef = ref(db, `clinics/${currentUser.uid}/doctors/${doctorId}/queue`);
     
     // Real-time listener!
     const unsubscribe = onValue(queueRef, (snapshot) => {
@@ -21,7 +47,7 @@ export function DoctorQueue() {
       if (data) {
         // Convert object to array
         const queueList = Object.keys(data).map(key => ({
-          token: key,
+          token: key, // e.g. 02062026-1
           ...data[key]
         }));
         
@@ -38,18 +64,18 @@ export function DoctorQueue() {
     });
 
     return () => unsubscribe();
-  }, [doctorId]);
+  }, [currentUser, doctorId]);
 
   const handleStartConsult = async (token) => {
     // Update Firebase status
-    const tokenRef = ref(db, `doctors/${doctorId}/queue/${token}`);
+    const tokenRef = ref(db, `clinics/${currentUser.uid}/doctors/${doctorId}/queue/${token}`);
     await update(tokenRef, { status: 'in-consult' });
     navigate(`/doctor/review/${token}?doc=${doctorId}`);
   };
 
   const handleToggleHold = async (token, currentStatus) => {
     const newStatus = currentStatus === 'on-hold' ? 'ready' : 'on-hold';
-    const tokenRef = ref(db, `doctors/${doctorId}/queue/${token}`);
+    const tokenRef = ref(db, `clinics/${currentUser.uid}/doctors/${doctorId}/queue/${token}`);
     await update(tokenRef, { status: newStatus });
   };
 
@@ -63,9 +89,27 @@ export function DoctorQueue() {
     }
   };
 
+  // Convert YYYY-MM-DD to DDMMYYYY for filtering
+  const targetFilterPrefix = useMemo(() => {
+    if (!selectedDate) return '';
+    const [y, m, d] = selectedDate.split('-');
+    return `${d}${m}${y}`; // e.g. 02062026
+  }, [selectedDate]);
+
+  const formattedDisplayDate = useMemo(() => {
+    if (!selectedDate) return '';
+    const [y, m, d] = selectedDate.split('-');
+    return `${d}/${m}/${y}`; // e.g. 02/06/2026
+  }, [selectedDate]);
+
+  // Filter patients by selected date
+  const todaysPatients = useMemo(() => {
+    return queue.filter(patient => patient.token.startsWith(targetFilterPrefix));
+  }, [queue, targetFilterPrefix]);
+
   return (
     <div className="space-y-6 max-w-5xl mx-auto mt-8">
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
         <div>
           <h1 className="text-4xl font-black tracking-tight mb-2">Live Queue</h1>
           <p className="text-muted-foreground text-lg flex items-center">
@@ -74,16 +118,29 @@ export function DoctorQueue() {
           </p>
         </div>
         
-        <div className="bg-background/80 p-2 rounded-xl border border-white/10 flex items-center shadow-lg">
-          <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-2 mr-3">Viewing Queue For:</label>
-          <select 
-            className="bg-primary/20 border-none text-primary font-bold text-lg rounded-lg px-4 py-2"
-            value={doctorId}
-            onChange={(e) => setDoctorId(e.target.value)}
-          >
-            <option value="doc-smith">Dr. Sarah Smith</option>
-            <option value="doc-jones">Dr. Michael Jones</option>
-          </select>
+        <div className="flex flex-col sm:flex-row items-center gap-4">
+          <div className="bg-background/80 p-2 rounded-xl border border-white/10 flex items-center shadow-lg">
+            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-2 mr-3">Date:</label>
+            <input 
+              type="date"
+              className="bg-primary/20 border-none text-primary font-bold text-lg rounded-lg px-4 py-2"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+            />
+          </div>
+          
+          <div className="bg-background/80 p-2 rounded-xl border border-white/10 flex items-center shadow-lg">
+            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-2 mr-3">Doctor:</label>
+            <select 
+              className="bg-primary/20 border-none text-primary font-bold text-lg rounded-lg px-4 py-2"
+              value={doctorId}
+              onChange={(e) => setDoctorId(e.target.value)}
+            >
+              {doctors.map(d => (
+                <option key={d.id} value={d.id}>{d.name}</option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 
@@ -91,30 +148,40 @@ export function DoctorQueue() {
         <Card glass className="border-primary/20 bg-primary/5">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-bold text-muted-foreground uppercase tracking-wider flex items-center">
-              <Users className="w-4 h-4 mr-2" />
-              My Queue
+              <Calendar className="w-4 h-4 mr-2" />
+              Queue for {formattedDisplayDate}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-5xl font-black text-primary">{queue.filter(p => p.status === 'ready').length}</div>
+            <div className="text-5xl font-black text-primary">{todaysPatients.filter(p => p.status === 'ready').length}</div>
             <p className="text-muted-foreground mt-1">Patients waiting</p>
+          </CardContent>
+        </Card>
+        
+        <Card glass className="border-white/10 bg-background/50">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-bold text-muted-foreground uppercase tracking-wider flex items-center">
+              <Users className="w-4 h-4 mr-2" />
+              Total Consulted Today
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-5xl font-black text-foreground">{todaysPatients.filter(p => p.status === 'completed').length}</div>
+            <p className="text-muted-foreground mt-1">Patients seen</p>
           </CardContent>
         </Card>
       </div>
 
       <Card glass className="mt-8 border-white/10 overflow-hidden shadow-2xl">
-        <CardHeader className="bg-muted/30 border-b border-white/5 pb-4">
-          <CardTitle className="text-xl">Live Patient Queue</CardTitle>
-        </CardHeader>
         <CardContent className="p-0">
           <div className="divide-y divide-white/5">
             <AnimatePresence>
-              {queue.length === 0 ? (
-                <div className="p-12 text-center text-muted-foreground">
-                  No patients in your queue right now.
+              {todaysPatients.length === 0 ? (
+                <div className="p-12 text-center text-muted-foreground text-lg">
+                  No patients assigned for {formattedDisplayDate}.
                 </div>
               ) : (
-                queue.map((patient) => (
+                todaysPatients.map((patient) => (
                   <motion.div 
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -122,11 +189,11 @@ export function DoctorQueue() {
                     className="flex items-center justify-between p-6 hover:bg-white/5 transition-colors group"
                   >
                     <div className="flex items-center space-x-6">
-                      <div className="bg-primary/10 text-primary w-32 h-20 rounded-2xl flex items-center justify-center font-black text-2xl shadow-inner border border-primary/20">
-                        {patient.token.split('-')[1]}
+                      <div className="bg-primary/10 text-primary w-24 h-20 rounded-2xl flex items-center justify-center font-black text-3xl shadow-inner border border-primary/20">
+                        #{patient.token.split('-')[1]}
                       </div>
                       <div>
-                        <p className="font-bold text-2xl mb-2 tracking-tight">{patient.token}</p>
+                        <p className="font-bold text-2xl mb-2 tracking-tight">Token #{patient.token.split('-')[1]}</p>
                         <div className="flex gap-3 items-center">
                           {getStatusBadge(patient.status)}
                           <span className="text-muted-foreground text-sm flex items-center bg-background px-3 py-1 rounded-full border border-white/5">
