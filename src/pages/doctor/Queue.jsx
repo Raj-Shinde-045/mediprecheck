@@ -12,6 +12,7 @@ export function DoctorQueue() {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
   const [doctorId, setDoctorId] = useState('');
+  const [isDocDropdownOpen, setIsDocDropdownOpen] = useState(false);
   const [doctors, setDoctors] = useState([]);
   const [queue, setQueue] = useState([]);
   
@@ -28,7 +29,11 @@ export function DoctorQueue() {
       const snapshot = await get(docsRef);
       if (snapshot.exists()) {
         const data = snapshot.val();
-        const docsList = Object.keys(data).map(key => ({ id: key, name: data[key].name }));
+        const docsList = Object.keys(data).map(key => ({ 
+          id: key, 
+          name: data[key].name,
+          profilePic: data[key].profilePic || '' 
+        }));
         setDoctors(docsList);
         if (docsList.length > 0) setDoctorId(docsList[0].id);
       }
@@ -52,9 +57,17 @@ export function DoctorQueue() {
         }));
         
         // Sort logic: 'ready' (1) -> 'in-consult' (2) -> 'on-hold' (3) -> 'completed' (4)
+        // If statuses are equal, sort by Token Number (descending) so most recent is on top
         queueList.sort((a, b) => {
           const rank = { 'ready': 1, 'in-consult': 2, 'on-hold': 3, 'completed': 4 };
-          return (rank[a.status] || 99) - (rank[b.status] || 99);
+          const rankDiff = (rank[a.status] || 99) - (rank[b.status] || 99);
+          
+          if (rankDiff !== 0) return rankDiff;
+          
+          // Secondary sort: Token number descending
+          const numA = parseInt(a.token.split('-')[1] || 0);
+          const numB = parseInt(b.token.split('-')[1] || 0);
+          return numB - numA;
         });
         
         setQueue(queueList);
@@ -70,6 +83,10 @@ export function DoctorQueue() {
     // Update Firebase status
     const tokenRef = ref(db, `clinics/${currentUser.uid}/doctors/${doctorId}/queue/${token}`);
     await update(tokenRef, { status: 'in-consult' });
+    navigate(`/doctor/review/${token}?doc=${doctorId}`);
+  };
+
+  const handleViewRecord = (token) => {
     navigate(`/doctor/review/${token}?doc=${doctorId}`);
   };
 
@@ -129,17 +146,49 @@ export function DoctorQueue() {
             />
           </div>
           
-          <div className="bg-background/80 p-2 rounded-xl border border-white/10 flex items-center shadow-lg">
-            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-2 mr-3">Doctor:</label>
-            <select 
-              className="bg-primary/20 border-none text-primary font-bold text-lg rounded-lg px-4 py-2"
-              value={doctorId}
-              onChange={(e) => setDoctorId(e.target.value)}
-            >
-              {doctors.map(d => (
-                <option key={d.id} value={d.id}>{d.name}</option>
-              ))}
-            </select>
+          <div className="bg-background/80 p-2 rounded-xl border border-white/10 flex items-center shadow-lg relative">
+            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-2 mr-3">Viewing Queue For:</label>
+            
+            <div className="relative inline-block text-left min-w-[200px]">
+              <div 
+                onClick={() => setIsDocDropdownOpen(!isDocDropdownOpen)}
+                className="flex items-center justify-between bg-primary/20 text-primary font-bold text-lg rounded-lg px-4 py-2 cursor-pointer hover:bg-primary/30 transition-colors"
+              >
+                <div className="flex items-center">
+                  {doctors.find(d => d.id === doctorId)?.profilePic ? (
+                    <img src={doctors.find(d => d.id === doctorId)?.profilePic} alt="Doc" className="w-6 h-6 rounded-full object-cover mr-2" />
+                  ) : (
+                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs mr-2">
+                      {doctors.find(d => d.id === doctorId)?.name?.replace('Dr. ', '').charAt(0)?.toUpperCase()}
+                    </div>
+                  )}
+                  <span>{doctors.find(d => d.id === doctorId)?.name || 'Select Doctor'}</span>
+                </div>
+                <span className="ml-2 text-sm opacity-70">▼</span>
+              </div>
+
+              {isDocDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-full bg-background border border-white/10 rounded-xl shadow-2xl z-50 max-h-[300px] overflow-y-auto">
+                  {doctors.map(doc => (
+                    <div 
+                      key={doc.id}
+                      onClick={() => { setDoctorId(doc.id); setIsDocDropdownOpen(false); }}
+                      className={`flex items-center p-3 cursor-pointer transition-colors ${doctorId === doc.id ? 'bg-primary/20 text-primary' : 'hover:bg-white/5'}`}
+                    >
+                      {doc.profilePic ? (
+                        <img src={doc.profilePic} alt={doc.name} className="w-6 h-6 rounded-full object-cover mr-2" />
+                      ) : (
+                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs mr-2">
+                          {doc.name.replace('Dr. ', '').charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                      <span className="font-bold text-sm">{doc.name}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
           </div>
         </div>
       </div>
@@ -215,12 +264,21 @@ export function DoctorQueue() {
                         </Button>
                       )}
                       
-                      {patient.status !== 'completed' && (
+                      {patient.status !== 'completed' ? (
                         <Button 
                           onClick={() => handleStartConsult(patient.token)}
                           className="h-14 px-8 text-lg font-bold rounded-xl shadow-lg opacity-90 group-hover:opacity-100 transition-all hover:scale-105"
                         >
                           Review Triage
+                          <ChevronRight className="w-5 h-5 ml-2" />
+                        </Button>
+                      ) : (
+                        <Button 
+                          variant="secondary"
+                          onClick={() => handleViewRecord(patient.token)}
+                          className="h-14 px-8 text-lg font-bold rounded-xl shadow-lg transition-all hover:scale-105 bg-white/10 hover:bg-white/20 text-white"
+                        >
+                          View Record
                           <ChevronRight className="w-5 h-5 ml-2" />
                         </Button>
                       )}

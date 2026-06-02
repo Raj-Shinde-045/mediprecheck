@@ -22,12 +22,10 @@ export function Kiosk() {
 
   const { currentUser } = useAuth();
   
-  // Receptionist Intake State
   const [doctorId, setDoctorId] = useState('');
+  const [isDocDropdownOpen, setIsDocDropdownOpen] = useState(false);
   const [age, setAge] = useState('');
   const [sex, setSex] = useState('Male');
-  const [allergies, setAllergies] = useState('None');
-  const [medications, setMedications] = useState('None');
   
   // Vitals
   const [bp, setBp] = useState('');
@@ -46,7 +44,11 @@ export function Kiosk() {
       const snapshot = await get(docsRef);
       if (snapshot.exists()) {
         const data = snapshot.val();
-        const docsList = Object.keys(data).map(key => ({ id: key, name: data[key].name }));
+        const docsList = Object.keys(data).map(key => ({ 
+          id: key, 
+          name: data[key].name,
+          profilePic: data[key].profilePic || ''
+        }));
         setDoctors(docsList);
         if (docsList.length > 0) setDoctorId(docsList[0].id);
       }
@@ -79,7 +81,7 @@ export function Kiosk() {
     if (!age || !category) return;
 
     const intakeData = { 
-      category, age, sex, allergies, medications, 
+      category, age, sex, 
       vitals: { 
         bp: bp || 'Not recorded', 
         hr: hr || 'Not recorded', 
@@ -170,22 +172,55 @@ export function Kiosk() {
                   <p className="text-muted-foreground text-lg">Record Vitals & Start Triage</p>
                 </div>
               </div>
-              <div className="text-right">
-                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider block mb-1">Assign Doctor</label>
-                <select 
-                  className="bg-background border border-primary/20 text-foreground text-lg rounded-lg px-4 py-2"
-                  value={doctorId}
-                  onChange={(e) => setDoctorId(e.target.value)}
-                >
-                  {doctors.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
-                </select>
+              <div className="text-right relative">
+                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider block mb-2">Assign Doctor</label>
+                
+                <div className="relative inline-block text-left min-w-[240px]">
+                  <div 
+                    onClick={() => setIsDocDropdownOpen(!isDocDropdownOpen)}
+                    className="flex items-center justify-between bg-background border border-primary/30 text-foreground text-lg rounded-xl px-4 py-3 cursor-pointer hover:border-primary/60 transition-colors shadow-sm"
+                  >
+                    <div className="flex items-center">
+                      {doctors.find(d => d.id === doctorId)?.profilePic ? (
+                        <img src={doctors.find(d => d.id === doctorId)?.profilePic} alt="Doc" className="w-8 h-8 rounded-full object-cover mr-3 border border-white/10" />
+                      ) : (
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm mr-3">
+                          {doctors.find(d => d.id === doctorId)?.name?.replace('Dr. ', '').charAt(0)?.toUpperCase()}
+                        </div>
+                      )}
+                      <span className="font-bold">{doctors.find(d => d.id === doctorId)?.name || 'Select Doctor'}</span>
+                    </div>
+                    <span className="ml-2 text-muted-foreground text-sm">▼</span>
+                  </div>
+
+                  {isDocDropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-full bg-background border border-white/10 rounded-xl shadow-2xl z-50 max-h-[300px] overflow-y-auto">
+                      {doctors.map(doc => (
+                        <div 
+                          key={doc.id}
+                          onClick={() => { setDoctorId(doc.id); setIsDocDropdownOpen(false); }}
+                          className={`flex items-center p-3 cursor-pointer transition-colors ${doctorId === doc.id ? 'bg-primary/20 text-primary' : 'hover:bg-white/5'}`}
+                        >
+                          {doc.profilePic ? (
+                            <img src={doc.profilePic} alt={doc.name} className="w-8 h-8 rounded-full object-cover mr-3 border border-white/10" />
+                          ) : (
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm mr-3">
+                              {doc.name.replace('Dr. ', '').charAt(0).toUpperCase()}
+                            </div>
+                          )}
+                          <span className="font-bold text-base">{doc.name}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
             <form onSubmit={startTriage} className="space-y-8">
               
               {/* Demographics & History */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Age</label>
                   <Input type="number" placeholder="45" value={age} onChange={(e) => setAge(e.target.value)} required />
@@ -196,14 +231,6 @@ export function Kiosk() {
                     <option>Male</option>
                     <option>Female</option>
                   </select>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Known Allergies</label>
-                  <Input type="text" value={allergies} onChange={(e) => setAllergies(e.target.value)} />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Current Meds</label>
-                  <Input type="text" value={medications} onChange={(e) => setMedications(e.target.value)} />
                 </div>
               </div>
 

@@ -28,7 +28,6 @@ export async function generateNextQuestion(history) {
   const systemPrompt = `You are an expert clinical triage AI. Your job is to ask ONE highly professional, clinical follow-up question to determine the severity and nature of the patient's chief complaint.
 Patient Context: ${intake.age}yo ${intake.sex}. Complaint: ${intake.category.toUpperCase()}.
 Vitals: BP ${intake.vitals.bp}, HR ${intake.vitals.hr}, Temp ${intake.vitals.temp}, O2 ${intake.vitals.o2}.
-Allergies: ${intake.allergies}. Meds: ${intake.medications}.
 
 Previous Questions:
 ${transcript ? transcript : "None yet. This is the first question."}
@@ -37,13 +36,13 @@ Instructions:
 1. Ask exactly ONE follow-up question.
 2. ${isFirstQuestion 
   ? "CRITICAL: Because this is the VERY FIRST question, DO NOT ask Yes/No red-flag questions yet. Your goal is to narrow down the chief complaint. Ask a clarifying multiple-choice question to pinpoint the exact location, type, or primary nature of the symptom. Provide 3 to 4 specific symptom options based on the category (e.g., for ENT: 'Ear pain', 'Sore throat', 'Sinus pressure', etc.)."
-  : "Now that the primary symptom is established, prioritize ruling out IMMEDIATE life-threatening conditions or gauging severity (e.g., if chest pain, ask about radiation or diaphoresis). You can use Yes/No or specific symptom descriptors."}
-3. Keep the question concise, empathetic, and patient-friendly.
+  : "Now that the primary symptom is established, prioritize ruling out IMMEDIATE life-threatening conditions or gauging severity (e.g., if chest pain, ask about radiation or shortness of breath). You can use Yes/No or specific symptom descriptors."}
+3. CRITICAL: The patient is NOT a doctor. You MUST translate all medical concepts into extremely simple, 5th-grade layman's terms. Do not use words like 'diaphoresis' (use 'sweating'), 'syncope' (use 'fainting'), or 'dyspnea' (use 'trouble breathing'). Make the questions sound like a friendly, conversational nurse.
 
 Output ONLY a JSON object in this exact format:
 {
-  "question": "The professional medical question to ask",
-  "options": ["Option 1", "Option 2", "Option 3"] // limit to 2-4 short options
+  "question": "The extremely simple, patient-friendly question to ask",
+  "options": ["Simple Option 1", "Simple Option 2", "Simple Option 3"] // limit to 2-4 short options
 }
 Do not output any markdown or explanation, just the raw JSON object.`;
 
@@ -99,7 +98,17 @@ Analyze the transcript and generate a structured JSON output with the following 
   ],
   "riskLevel": "Low", // Evaluate the transcript and vitals. Value MUST be one of: "Low", "Medium", "High", "Critical"
   "redFlags": ["List any specific alarming symptoms or abnormal vitals indicating a medical emergency", "Leave array empty if no red flags are present"],
-  "verdict": "Provide a concise 2-3 sentence 'Junior Doctor Verdict'. State the top 3 differential diagnoses (DDx) based on the symptoms and vitals. Highlight any immediate red flags. CRITICAL INSTRUCTION: You MUST wrap ONLY the specific Differential Diagnoses in **double asterisks** so they stand out (e.g. **Pulmonary Embolism**, **Pneumonia**). Do NOT highlight common symptoms like 'cough' or 'chest pain'. Over-highlighting ruins readability."
+  "verdict": "Provide a concise 2-3 sentence 'Junior Doctor Verdict'. State the top 3 differential diagnoses (DDx) based on the symptoms and vitals. Highlight any immediate red flags. CRITICAL INSTRUCTION: You MUST wrap ONLY the specific Differential Diagnoses in **double asterisks** so they stand out (e.g. **Pulmonary Embolism**, **Pneumonia**).",
+  "dietaryAdvice": {
+    "toEat": ["List 2-3 specific foods or dietary habits the patient SHOULD consume to aid recovery based on the suspected condition"],
+    "toAvoid": ["List 2-3 specific foods or habits the patient SHOULD AVOID (e.g., spicy foods for acid reflux, dairy for certain ENT issues)"]
+  },
+  "diseaseProgression": [
+    { "day": 1, "prediction": "Prediction for Day 1 if left untreated..." },
+    { "day": 2, "prediction": "Prediction for Day 2 if left untreated..." },
+    { "day": 3, "prediction": "Prediction for Day 3 if left untreated..." },
+    { "day": 4, "prediction": "Prediction for Day 4 if left untreated..." }
+  ]
 }
 Output ONLY the raw JSON object.`;
 

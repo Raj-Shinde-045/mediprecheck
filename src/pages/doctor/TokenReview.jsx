@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
-import { ArrowLeft, Stethoscope, CheckCircle2, Activity, ShieldAlert, Pill } from 'lucide-react';
+import { ArrowLeft, Stethoscope, CheckCircle2, Activity, ShieldAlert, Pill, Utensils, AlertOctagon, Apple, History, RotateCcw } from 'lucide-react';
 import { db } from '../../lib/firebase';
 import { ref, get, update } from 'firebase/database';
 import { motion } from 'framer-motion';
@@ -18,6 +18,7 @@ export function TokenReview() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [patientData, setPatientData] = useState(null);
+  const [timeMachineDay, setTimeMachineDay] = useState(1);
 
   useEffect(() => {
     const loadData = async () => {
@@ -36,6 +37,12 @@ export function TokenReview() {
   const handleMarkConsulted = async () => {
     const tokenRef = ref(db, `clinics/${currentUser.uid}/doctors/${doctorId}/queue/${token}`);
     await update(tokenRef, { status: 'completed' });
+    navigate('/doctor');
+  };
+
+  const handleReopenCase = async () => {
+    const tokenRef = ref(db, `clinics/${currentUser.uid}/doctors/${doctorId}/queue/${token}`);
+    await update(tokenRef, { status: 'ready' });
     navigate('/doctor');
   };
 
@@ -74,25 +81,33 @@ export function TokenReview() {
   const isRecorded = (val) => val && val.toLowerCase() !== 'not recorded' && val.toLowerCase() !== 'n/a' && val.trim() !== '';
 
   const hasAnyVitals = isRecorded(intake.vitals?.bp) || isRecorded(intake.vitals?.hr) || isRecorded(intake.vitals?.temp) || isRecorded(intake.vitals?.o2);
-  const hasAllergies = isRecorded(intake.allergies) && intake.allergies.toLowerCase() !== 'none';
-  const hasMeds = isRecorded(intake.medications) && intake.medications.toLowerCase() !== 'none';
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 max-w-5xl mx-auto mt-8">
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
         <div className="flex items-center">
           <Button variant="ghost" onClick={() => navigate('/doctor')} className="-ml-4 mr-4 h-12 w-12 p-0 rounded-full">
             <ArrowLeft className="w-6 h-6" />
           </Button>
           <div>
-            <h1 className="text-4xl font-black tracking-tight">Token #{token.split('-')[1]}</h1>
+            <h1 className="text-4xl font-black tracking-tight flex items-center gap-4">
+              Token #{token.split('-')[1]}
+              {patientData.status === 'completed' && <span className="bg-green-500 text-white text-sm px-3 py-1 rounded-full uppercase tracking-widest font-bold">Consulted</span>}
+            </h1>
             <p className="text-muted-foreground text-lg">Patient Triage Review</p>
           </div>
         </div>
-        <Button onClick={handleMarkConsulted} className="h-12 px-6 text-lg font-bold bg-green-600 hover:bg-green-700 text-foreground dark:text-white rounded-xl shadow-lg hover:scale-105 transition-all">
-          <CheckCircle2 className="w-5 h-5 mr-2" />
-          Mark as Consulted
-        </Button>
+        {patientData.status === 'completed' ? (
+          <Button onClick={handleReopenCase} className="h-12 px-6 text-lg font-bold bg-yellow-600 hover:bg-yellow-700 text-white rounded-xl shadow-lg hover:scale-105 transition-all">
+            <RotateCcw className="w-5 h-5 mr-2" />
+            Reopen Case
+          </Button>
+        ) : (
+          <Button onClick={handleMarkConsulted} className="h-12 px-6 text-lg font-bold bg-green-600 hover:bg-green-700 text-white rounded-xl shadow-lg hover:scale-105 transition-all">
+            <CheckCircle2 className="w-5 h-5 mr-2" />
+            Mark as Consulted
+          </Button>
+        )}
       </div>
 
       <div className="grid md:grid-cols-4 gap-6">
@@ -139,7 +154,7 @@ export function TokenReview() {
         )}
         
         {/* VITALS PANEL - Conditionally rendered */}
-        {(hasAnyVitals || hasAllergies || hasMeds) && (
+        {hasAnyVitals && (
           <Card glass className="md:col-span-4 border-red-500/30 shadow-xl overflow-hidden">
             <div className="bg-red-500/10 border-b border-red-500/20 px-6 py-3 flex items-center">
               <Activity className="w-5 h-5 text-red-500 mr-2" />
@@ -174,28 +189,6 @@ export function TokenReview() {
                     <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">O2 Saturation</p>
                     <p className="text-4xl font-black font-mono text-blue-500">{intake.vitals.o2}</p>
                     <p className="text-xs text-muted-foreground mt-1">%</p>
-                  </div>
-                )}
-
-                {/* Allergies & Meds */}
-                {(hasAllergies || hasMeds) && (
-                  <div className={`p-6 text-left ${hasAnyVitals ? 'col-span-2' : 'col-span-6 flex gap-12'} hover:bg-white/5 transition-colors`}>
-                    {hasAllergies && (
-                      <div className={hasAnyVitals ? 'mb-4' : ''}>
-                        <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1 flex items-center">
-                          <ShieldAlert className="w-3 h-3 mr-1 text-orange-500"/> Known Allergies
-                        </p>
-                        <p className="text-orange-500 font-bold text-lg">{intake.allergies}</p>
-                      </div>
-                    )}
-                    {hasMeds && (
-                      <div>
-                        <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1 flex items-center">
-                          <Pill className="w-3 h-3 mr-1 text-purple-500"/> Current Medications
-                        </p>
-                        <p className="font-medium">{intake.medications}</p>
-                      </div>
-                    )}
                   </div>
                 )}
 
@@ -256,6 +249,82 @@ export function TokenReview() {
                     <p className="text-lg leading-relaxed font-medium text-foreground bg-background/50 p-6 rounded-xl border border-primary/10 shadow-inner">
                       {renderMarkdown(summary.verdict)}
                     </p>
+                  </div>
+                )}
+
+                {/* DIETARY ADVICE */}
+                {summary.dietaryAdvice && (
+                  <div className="p-6 bg-background/50 border-t border-white/5 grid md:grid-cols-2 gap-6">
+                    <div className="space-y-3">
+                      <h3 className="text-sm font-black text-green-500 uppercase tracking-widest flex items-center">
+                        <Apple className="w-4 h-4 mr-2" />
+                        Recommended to Consume
+                      </h3>
+                      <ul className="space-y-2 bg-green-500/10 p-4 rounded-xl border border-green-500/20">
+                        {summary.dietaryAdvice.toEat.map((item, idx) => (
+                          <li key={idx} className="flex items-start text-green-100 font-medium text-sm">
+                            <span className="mr-2 text-green-500 font-black">•</span>
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <h3 className="text-sm font-black text-red-500 uppercase tracking-widest flex items-center">
+                        <AlertOctagon className="w-4 h-4 mr-2" />
+                        Recommended to Avoid
+                      </h3>
+                      <ul className="space-y-2 bg-red-500/10 p-4 rounded-xl border border-red-500/20">
+                        {summary.dietaryAdvice.toAvoid.map((item, idx) => (
+                          <li key={idx} className="flex items-start text-red-100 font-medium text-sm">
+                            <span className="mr-2 text-red-500 font-black">•</span>
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                )}
+
+                {/* AI TIME MACHINE */}
+                {summary.diseaseProgression && summary.diseaseProgression.length > 0 && (
+                  <div className="p-6 bg-gradient-to-br from-indigo-900/40 to-purple-900/40 border-t border-indigo-500/20">
+                    <h3 className="text-sm font-black text-indigo-400 uppercase tracking-widest flex items-center mb-6">
+                      <History className="w-4 h-4 mr-2" />
+                      AI Time Machine (Disease Progression Simulator)
+                    </h3>
+                    
+                    <div className="space-y-6">
+                      <div className="flex justify-between items-center px-4 md:px-12 relative z-10">
+                        {[1, 2, 3, 4].map(day => (
+                          <button 
+                            key={day}
+                            onClick={() => setTimeMachineDay(day)}
+                            className={`flex flex-col items-center gap-2 transition-all ${timeMachineDay === day ? 'scale-110' : 'opacity-60 hover:opacity-100'} relative`}
+                          >
+                            <div className={`w-12 h-12 rounded-full flex items-center justify-center font-black text-xl z-10 transition-colors ${timeMachineDay === day ? 'bg-indigo-500 text-white shadow-[0_0_20px_rgba(99,102,241,0.8)] border-2 border-indigo-300' : 'bg-background border-2 border-white/10'}`}>
+                              {day}
+                            </div>
+                            <span className={`text-xs font-bold uppercase tracking-wider ${timeMachineDay === day ? 'text-indigo-300' : 'text-muted-foreground'}`}>Day {day}</span>
+                          </button>
+                        ))}
+                      </div>
+                      
+                      <div className="relative h-2 bg-black/50 rounded-full overflow-hidden mx-8 md:mx-16 -mt-16 mb-12 shadow-inner">
+                        <div 
+                          className="absolute top-0 left-0 h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-500" 
+                          style={{ width: `${((timeMachineDay - 1) / 3) * 100}%` }}
+                        />
+                      </div>
+
+                      <div className="bg-background/80 p-6 md:p-8 rounded-2xl border border-indigo-500/30 shadow-[inset_0_2px_20px_rgba(0,0,0,0.5)] min-h-[120px] flex flex-col items-center justify-center text-center relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500"></div>
+                        <p className="text-lg md:text-xl font-medium text-indigo-100 leading-relaxed max-w-2xl">
+                          {summary.diseaseProgression.find(p => p.day === timeMachineDay)?.prediction || 'No prediction available for this timeframe.'}
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
