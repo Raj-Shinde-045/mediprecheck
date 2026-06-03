@@ -2,11 +2,12 @@ import { db } from './firebase';
 import { ref, set, get, child, serverTimestamp, runTransaction } from 'firebase/database';
 
 // Safely generate the Daily Token: DDMMYYYY-N
-export async function generateToken() {
+export async function generateToken(clinicId, doctorId) {
   const date = new Date();
   const ddmmyyyy = `${String(date.getDate()).padStart(2, '0')}${String(date.getMonth() + 1).padStart(2, '0')}${date.getFullYear()}`;
   
-  const counterRef = ref(db, `counters/${ddmmyyyy}`);
+  // Scope the counter strictly to the specific clinic AND doctor!
+  const counterRef = ref(db, `clinics/${clinicId}/doctors/${doctorId}/counters/${ddmmyyyy}`);
   let newCount = 1;
   
   await runTransaction(counterRef, (currentData) => {

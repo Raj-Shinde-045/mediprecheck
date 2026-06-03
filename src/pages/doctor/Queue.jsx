@@ -4,7 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Ca
 import { Button } from '../../components/ui/Button';
 import { Users, Clock, ChevronRight, Activity, Calendar } from 'lucide-react';
 import { db } from '../../lib/firebase';
-import { ref, onValue, update, get } from 'firebase/database';
+import { ref, onValue, update, get, remove } from 'firebase/database';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -96,6 +96,18 @@ export function DoctorQueue() {
     await update(tokenRef, { status: newStatus });
   };
 
+  const handleClearQueue = async () => {
+    if (!confirm('Are you sure you want to delete ALL patients in this queue? This cannot be undone.')) return;
+    
+    // Delete the entire queue for this doctor
+    const queueRef = ref(db, `clinics/${currentUser.uid}/doctors/${doctorId}/queue`);
+    await remove(queueRef);
+    
+    // Delete the daily counters for this doctor so tokens reset to #1
+    const countersRef = ref(db, `clinics/${currentUser.uid}/doctors/${doctorId}/counters`);
+    await remove(countersRef);
+  };
+
   const getStatusBadge = (status) => {
     switch(status) {
       case 'ready': return <span className="bg-yellow-500/20 text-yellow-500 px-3 py-1 rounded-full text-sm font-bold uppercase tracking-wider flex items-center gap-1"><Clock className="w-3 h-3"/> Waiting</span>;
@@ -136,6 +148,14 @@ export function DoctorQueue() {
         </div>
         
         <div className="flex flex-col sm:flex-row items-center gap-4">
+          <Button 
+            variant="ghost" 
+            onClick={handleClearQueue} 
+            className="text-red-500 border border-red-500/30 hover:bg-red-500/10 font-bold px-4 rounded-xl shadow-sm"
+          >
+            Clear Queue (Test)
+          </Button>
+
           <div className="bg-background/80 p-2 rounded-xl border border-white/10 flex items-center shadow-lg">
             <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-2 mr-3">Date:</label>
             <input 
@@ -235,7 +255,7 @@ export function DoctorQueue() {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     key={patient.token} 
-                    className="flex items-center justify-between p-6 hover:bg-white/5 transition-colors group"
+                    className="flex flex-col md:flex-row items-start md:items-center justify-between p-6 hover:bg-white/5 transition-colors group"
                   >
                     <div className="flex items-center space-x-6">
                       <div className="bg-primary/10 text-primary w-24 h-20 rounded-2xl flex items-center justify-center font-black text-3xl shadow-inner border border-primary/20">
@@ -253,12 +273,12 @@ export function DoctorQueue() {
                       </div>
                     </div>
                     
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center w-full md:w-auto gap-3 mt-4 md:mt-0">
                       {(patient.status === 'ready' || patient.status === 'on-hold') && (
                         <Button 
                           variant="outline"
                           onClick={() => handleToggleHold(patient.token, patient.status)}
-                          className="h-14 px-5 text-sm font-bold rounded-xl border-white/10 hover:bg-white/5 opacity-80 hover:opacity-100"
+                          className="h-12 md:h-14 px-5 text-sm font-bold rounded-xl border-white/10 hover:bg-white/5 opacity-80 hover:opacity-100 w-full sm:w-auto"
                         >
                           {patient.status === 'on-hold' ? 'Resume Patient' : 'Put on Hold'}
                         </Button>
@@ -267,7 +287,7 @@ export function DoctorQueue() {
                       {patient.status !== 'completed' ? (
                         <Button 
                           onClick={() => handleStartConsult(patient.token)}
-                          className="h-14 px-8 text-lg font-bold rounded-xl shadow-lg opacity-90 group-hover:opacity-100 transition-all hover:scale-105"
+                          className="h-12 md:h-14 px-6 md:px-8 text-base md:text-lg font-bold rounded-xl shadow-lg opacity-90 group-hover:opacity-100 transition-all hover:scale-105 w-full sm:w-auto"
                         >
                           Review Triage
                           <ChevronRight className="w-5 h-5 ml-2" />
@@ -276,7 +296,7 @@ export function DoctorQueue() {
                         <Button 
                           variant="secondary"
                           onClick={() => handleViewRecord(patient.token)}
-                          className="h-14 px-8 text-lg font-bold rounded-xl shadow-lg transition-all hover:scale-105 bg-white/10 hover:bg-white/20 text-white"
+                          className="h-12 md:h-14 px-6 md:px-8 text-base md:text-lg font-bold rounded-xl shadow-lg transition-all hover:scale-105 bg-white/10 hover:bg-white/20 text-white w-full sm:w-auto"
                         >
                           View Record
                           <ChevronRight className="w-5 h-5 ml-2" />

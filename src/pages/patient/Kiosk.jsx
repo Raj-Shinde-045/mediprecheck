@@ -26,6 +26,7 @@ export function Kiosk() {
   const [isDocDropdownOpen, setIsDocDropdownOpen] = useState(false);
   const [age, setAge] = useState('');
   const [sex, setSex] = useState('Male');
+  const [sessionLanguage, setSessionLanguage] = useState('English');
   
   // Vitals
   const [bp, setBp] = useState('');
@@ -53,7 +54,18 @@ export function Kiosk() {
         if (docsList.length > 0) setDoctorId(docsList[0].id);
       }
     }
+    
+    async function loadDefaultLanguage() {
+      if (!currentUser) return;
+      const settingsRef = ref(db, `clinics/${currentUser.uid}/settings/defaultLanguage`);
+      const snapshot = await get(settingsRef);
+      if (snapshot.exists()) {
+        setSessionLanguage(snapshot.val());
+      }
+    }
+
     loadDoctors();
+    loadDefaultLanguage();
   }, [currentUser]);
 
   const categories = [
@@ -94,7 +106,7 @@ export function Kiosk() {
     setHistory(initialHistory);
     
     setIsThinking(true);
-    const nextQ = await generateNextQuestion(initialHistory);
+    const nextQ = await generateNextQuestion(initialHistory, sessionLanguage);
     setIsThinking(false);
     setCurrentQuestion(nextQ);
   };
@@ -103,8 +115,8 @@ export function Kiosk() {
     if (answer === "Finish Triage") {
       setIsSubmitting(true);
       try {
-        // 1. Generate Daily Token (DDMMYYYY-N)
-        const newToken = await generateToken();
+        // 1. Generate Daily Token (DDMMYYYY-N) scoped to specific doctor
+        const newToken = await generateToken(currentUser.uid, doctorId);
         setToken(newToken);
 
         // 2. Generate final summary
@@ -131,7 +143,7 @@ export function Kiosk() {
     setCurrentQuestion(null);
     
     setIsThinking(true);
-    const nextQ = await generateNextQuestion(newHistory);
+    const nextQ = await generateNextQuestion(newHistory, sessionLanguage);
     setIsThinking(false);
     setCurrentQuestion(nextQ);
   };
@@ -139,7 +151,7 @@ export function Kiosk() {
   if (isFinished) {
     return (
       <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex h-[80vh] items-center justify-center">
-        <Card glass className="max-w-md text-center p-12 border-green-500/30 shadow-2xl">
+        <Card glass className="max-w-md text-center p-6 md:p-12 border-green-500/30 shadow-2xl mx-4">
           <CheckCircle2 className="w-28 h-28 text-green-500 mx-auto mb-8 drop-shadow-lg" />
           <h2 className="text-4xl font-black mb-4">Patient Registered</h2>
           <p className="text-muted-foreground">Assigned to: {doctors.find(d => d.id === doctorId)?.name}</p>
@@ -158,11 +170,11 @@ export function Kiosk() {
   if (history.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[90vh] py-12 px-4 relative overflow-hidden">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/10 rounded-full blur-[120px] -z-10 animate-pulse" />
+        <div className="hidden md:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/10 rounded-full blur-[120px] -z-10 animate-pulse" />
         
         <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="w-full max-w-4xl z-10">
           <Card glass className="p-8 shadow-2xl border-white/10 backdrop-blur-2xl bg-background/80">
-            <div className="flex items-center justify-between mb-8 border-b border-white/10 pb-6">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-8 border-b border-white/10 pb-6">
               <div className="flex items-center gap-4">
                 <div className="bg-primary/20 p-4 rounded-2xl">
                   <ClipboardList className="w-8 h-8 text-primary" />
@@ -172,10 +184,10 @@ export function Kiosk() {
                   <p className="text-muted-foreground text-lg">Record Vitals & Start Triage</p>
                 </div>
               </div>
-              <div className="text-right relative">
+              <div className="text-left md:text-right relative w-full md:w-auto">
                 <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider block mb-2">Assign Doctor</label>
                 
-                <div className="relative inline-block text-left min-w-[240px]">
+                <div className="relative inline-block text-left w-full min-w-0 md:min-w-[240px]">
                   <div 
                     onClick={() => setIsDocDropdownOpen(!isDocDropdownOpen)}
                     className="flex items-center justify-between bg-background border border-primary/30 text-foreground text-lg rounded-xl px-4 py-3 cursor-pointer hover:border-primary/60 transition-colors shadow-sm"
@@ -242,19 +254,19 @@ export function Kiosk() {
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="space-y-2">
-                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Blood Pressure</label>
+                    <label className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-wider">Blood Pressure</label>
                     <Input type="text" placeholder="120/80" value={bp} onChange={(e) => setBp(e.target.value)} className="font-mono" />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Heart Rate (bpm)</label>
+                    <label className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-wider">Heart Rate (bpm)</label>
                     <Input type="number" placeholder="75" value={hr} onChange={(e) => setHr(e.target.value)} className="font-mono" />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Temp (°F)</label>
+                    <label className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-wider">Temp (°F)</label>
                     <Input type="number" step="0.1" placeholder="98.6" value={temp} onChange={(e) => setTemp(e.target.value)} className="font-mono" />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">O2 Sat (%)</label>
+                    <label className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-wider">O2 Sat (%)</label>
                     <Input type="number" placeholder="99" value={o2} onChange={(e) => setO2(e.target.value)} className="font-mono" />
                   </div>
                 </div>
@@ -262,7 +274,23 @@ export function Kiosk() {
 
               <div className="space-y-3">
                 <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Chief Complaint Category</label>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                
+                {/* Mobile View: Native Dropdown */}
+                <div className="md:hidden">
+                  <select 
+                    className="flex h-14 w-full rounded-xl border border-input bg-background px-4 py-2 text-base shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary appearance-none"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                  >
+                    <option value="" disabled>Select a category...</option>
+                    {categories.map(cat => (
+                      <option key={cat.id} value={cat.id}>{cat.label}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Desktop View: Grid */}
+                <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-3">
                   {categories.map(cat => (
                     <Button
                       key={cat.id}
@@ -306,6 +334,18 @@ export function Kiosk() {
             </p>
           </div>
         </div>
+        <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2">
+          <label className="text-xs sm:text-sm font-bold text-muted-foreground uppercase tracking-wider hidden sm:block">Language:</label>
+          <select 
+            value={sessionLanguage}
+            onChange={(e) => setSessionLanguage(e.target.value)}
+            className="h-10 px-3 rounded-lg border border-primary/30 bg-background text-sm font-medium focus:outline-none focus:border-primary/60 shadow-sm appearance-none min-w-[100px] sm:min-w-[120px]"
+          >
+            <option value="English">English</option>
+            <option value="Hindi">Hindi</option>
+            <option value="Marathi">Marathi</option>
+          </select>
+        </div>
       </div>
 
       <Card glass className="overflow-hidden shadow-2xl border-white/10 flex flex-col h-[70vh]">
@@ -318,13 +358,13 @@ export function Kiosk() {
                 return (
                   <motion.div key={`hist-${i}`} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
                     <div className="flex justify-start">
-                      <div className="bg-muted/80 backdrop-blur-sm px-6 py-4 rounded-3xl rounded-tl-none max-w-[85%] text-lg border border-white/5">
+                      <div className="bg-muted/80 backdrop-blur-sm px-6 py-4 rounded-3xl rounded-tl-none max-w-[95%] md:max-w-[85%] text-base md:text-lg border border-white/5">
                         {item.question}
                       </div>
                     </div>
                     {item.answer && (
                       <div className="flex justify-end">
-                        <div className="bg-primary text-primary-foreground px-6 py-4 rounded-3xl rounded-tr-none max-w-[85%] text-lg shadow-lg font-medium">
+                        <div className="bg-primary text-primary-foreground px-6 py-4 rounded-3xl rounded-tr-none max-w-[95%] md:max-w-[85%] text-base md:text-lg shadow-lg font-medium">
                           {item.answer}
                         </div>
                       </div>
@@ -335,7 +375,7 @@ export function Kiosk() {
 
               {currentQuestion && !isThinking && (
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex justify-start">
-                  <div className="bg-muted/80 backdrop-blur-sm px-6 py-4 rounded-3xl rounded-tl-none max-w-[85%] text-lg border border-primary/20 ring-1 ring-primary/10">
+                  <div className="bg-muted/80 backdrop-blur-sm px-6 py-4 rounded-3xl rounded-tl-none max-w-[95%] md:max-w-[85%] text-base md:text-lg border border-primary/20 ring-1 ring-primary/10">
                     {currentQuestion.question}
                   </div>
                 </motion.div>

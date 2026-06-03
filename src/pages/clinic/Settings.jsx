@@ -12,6 +12,7 @@ export function Settings() {
   const { currentUser } = useAuth();
   const [doctors, setDoctors] = useState([]);
   const [newDocName, setNewDocName] = useState('');
+  const [defaultLanguage, setDefaultLanguage] = useState('English');
   const [isLoading, setIsLoading] = useState(true);
   const [editingDocId, setEditingDocId] = useState(null);
   const [editName, setEditName] = useState('');
@@ -19,7 +20,17 @@ export function Settings() {
 
   useEffect(() => {
     loadDoctors();
+    loadSettings();
   }, [currentUser]);
+
+  const loadSettings = async () => {
+    if (!currentUser) return;
+    const settingsRef = ref(db, `clinics/${currentUser.uid}/settings/defaultLanguage`);
+    const snapshot = await get(settingsRef);
+    if (snapshot.exists()) {
+      setDefaultLanguage(snapshot.val());
+    }
+  };
 
   const loadDoctors = async () => {
     if (!currentUser) return;
@@ -76,6 +87,18 @@ export function Settings() {
     }
   };
 
+  const handleLanguageChange = async (e) => {
+    const newLang = e.target.value;
+    setDefaultLanguage(newLang);
+    if (!currentUser) return;
+    try {
+      const settingsRef = ref(db, `clinics/${currentUser.uid}/settings/defaultLanguage`);
+      await set(settingsRef, newLang);
+    } catch (err) {
+      console.error("Error saving language:", err);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="h-[80vh] flex items-center justify-center">
@@ -126,6 +149,18 @@ export function Settings() {
                   <Shield className="w-4 h-4 mr-3 text-muted-foreground" />
                   <span className="font-mono text-xs text-muted-foreground truncate">{currentUser.uid}</span>
                 </div>
+              </div>
+              <div>
+                <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Default Triage Language</p>
+                <select 
+                  value={defaultLanguage} 
+                  onChange={handleLanguageChange}
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary appearance-none"
+                >
+                  <option value="English">English</option>
+                  <option value="Hindi">Hindi</option>
+                  <option value="Marathi">Marathi</option>
+                </select>
               </div>
             </CardContent>
           </Card>
