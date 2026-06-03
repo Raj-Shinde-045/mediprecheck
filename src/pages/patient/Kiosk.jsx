@@ -26,6 +26,7 @@ export function Kiosk() {
   const [isDocDropdownOpen, setIsDocDropdownOpen] = useState(false);
   const [age, setAge] = useState('');
   const [sex, setSex] = useState('Male');
+  const [sessionLanguage, setSessionLanguage] = useState('English');
   
   // Vitals
   const [bp, setBp] = useState('');
@@ -53,7 +54,18 @@ export function Kiosk() {
         if (docsList.length > 0) setDoctorId(docsList[0].id);
       }
     }
+    
+    async function loadDefaultLanguage() {
+      if (!currentUser) return;
+      const settingsRef = ref(db, `clinics/${currentUser.uid}/settings/defaultLanguage`);
+      const snapshot = await get(settingsRef);
+      if (snapshot.exists()) {
+        setSessionLanguage(snapshot.val());
+      }
+    }
+
     loadDoctors();
+    loadDefaultLanguage();
   }, [currentUser]);
 
   const categories = [
@@ -94,7 +106,7 @@ export function Kiosk() {
     setHistory(initialHistory);
     
     setIsThinking(true);
-    const nextQ = await generateNextQuestion(initialHistory);
+    const nextQ = await generateNextQuestion(initialHistory, sessionLanguage);
     setIsThinking(false);
     setCurrentQuestion(nextQ);
   };
@@ -131,7 +143,7 @@ export function Kiosk() {
     setCurrentQuestion(null);
     
     setIsThinking(true);
-    const nextQ = await generateNextQuestion(newHistory);
+    const nextQ = await generateNextQuestion(newHistory, sessionLanguage);
     setIsThinking(false);
     setCurrentQuestion(nextQ);
   };
@@ -321,6 +333,18 @@ export function Kiosk() {
               Asking questions for: <span className="font-bold text-primary">{category.toUpperCase()}</span>
             </p>
           </div>
+        </div>
+        <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2">
+          <label className="text-xs sm:text-sm font-bold text-muted-foreground uppercase tracking-wider hidden sm:block">Language:</label>
+          <select 
+            value={sessionLanguage}
+            onChange={(e) => setSessionLanguage(e.target.value)}
+            className="h-10 px-3 rounded-lg border border-primary/30 bg-background text-sm font-medium focus:outline-none focus:border-primary/60 shadow-sm appearance-none min-w-[100px] sm:min-w-[120px]"
+          >
+            <option value="English">English</option>
+            <option value="Hindi">Hindi</option>
+            <option value="Marathi">Marathi</option>
+          </select>
         </div>
       </div>
 
