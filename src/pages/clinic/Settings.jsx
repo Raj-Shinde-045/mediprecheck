@@ -5,6 +5,7 @@ import { ref, get, set, remove, push } from 'firebase/database';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
+import { SubscriptionCard } from '../../components/subscription/SubscriptionCard';
 import { Settings as SettingsIcon, UserPlus, Trash2, User, Building, Mail, Shield, Stethoscope, Activity, Edit2, X, Check } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -318,6 +319,16 @@ export function Settings() {
         </div>
 
       </div>
+
+      {/* Subscription Section */}
+      <div className="mt-12 mb-8">
+        <SubscriptionCard 
+          clinicId={currentUser.uid} 
+          clinicEmail={currentUser.email}
+          clinicName="MedipreCheck Clinic"
+        />
+      </div>
+
     </motion.div>
   );
 }
