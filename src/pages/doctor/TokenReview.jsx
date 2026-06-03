@@ -90,7 +90,7 @@ export function TokenReview() {
             <ArrowLeft className="w-6 h-6" />
           </Button>
           <div>
-            <h1 className="text-4xl font-black tracking-tight flex items-center gap-4">
+            <h1 className="text-2xl md:text-4xl font-black tracking-tight flex items-center gap-2 md:gap-4 flex-wrap">
               Token #{token.split('-')[1]}
               {patientData.status === 'completed' && <span className="bg-green-500 text-white text-sm px-3 py-1 rounded-full uppercase tracking-widest font-bold">Consulted</span>}
             </h1>
@@ -225,9 +225,9 @@ export function TokenReview() {
                   <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-4">Follow-up Analysis (Clinical Q&A)</h3>
                   <div className="space-y-3">
                     {summary.analysis.map((item, idx) => (
-                      <div key={idx} className="flex items-start justify-between bg-background p-4 rounded-xl border border-white/5 shadow-sm hover:border-primary/20 transition-colors">
-                        <span className="text-foreground text-lg pr-4 font-medium">{item.question}</span>
-                        <span className={`px-4 py-1.5 rounded-lg text-sm font-black tracking-wider uppercase shrink-0 shadow-inner ${
+                      <div key={idx} className="flex flex-col sm:flex-row items-start sm:justify-between gap-3 sm:gap-4 bg-background p-4 rounded-xl border border-white/5 shadow-sm hover:border-primary/20 transition-colors">
+                        <span className="text-foreground text-base md:text-lg font-medium">{item.question}</span>
+                        <span className={`px-4 py-1.5 rounded-lg text-xs md:text-sm font-black tracking-wider uppercase shrink-0 shadow-inner self-start sm:self-auto ${
                           item.answer === 'Yes' ? 'bg-red-500/10 text-red-500 border border-red-500/20' : 
                           item.answer === 'No' ? 'bg-green-500/10 text-green-500 border border-green-500/20' : 
                           'bg-muted text-muted-foreground'

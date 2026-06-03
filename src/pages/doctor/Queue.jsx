@@ -255,7 +255,7 @@ export function DoctorQueue() {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     key={patient.token} 
-                    className="flex items-center justify-between p-6 hover:bg-white/5 transition-colors group"
+                    className="flex flex-col md:flex-row items-start md:items-center justify-between p-6 hover:bg-white/5 transition-colors group"
                   >
                     <div className="flex items-center space-x-6">
                       <div className="bg-primary/10 text-primary w-24 h-20 rounded-2xl flex items-center justify-center font-black text-3xl shadow-inner border border-primary/20">
@@ -273,12 +273,12 @@ export function DoctorQueue() {
                       </div>
                     </div>
                     
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center w-full md:w-auto gap-3 mt-4 md:mt-0">
                       {(patient.status === 'ready' || patient.status === 'on-hold') && (
                         <Button 
                           variant="outline"
                           onClick={() => handleToggleHold(patient.token, patient.status)}
-                          className="h-14 px-5 text-sm font-bold rounded-xl border-white/10 hover:bg-white/5 opacity-80 hover:opacity-100"
+                          className="h-12 md:h-14 px-5 text-sm font-bold rounded-xl border-white/10 hover:bg-white/5 opacity-80 hover:opacity-100 w-full sm:w-auto"
                         >
                           {patient.status === 'on-hold' ? 'Resume Patient' : 'Put on Hold'}
                         </Button>
@@ -287,7 +287,7 @@ export function DoctorQueue() {
                       {patient.status !== 'completed' ? (
                         <Button 
                           onClick={() => handleStartConsult(patient.token)}
-                          className="h-14 px-8 text-lg font-bold rounded-xl shadow-lg opacity-90 group-hover:opacity-100 transition-all hover:scale-105"
+                          className="h-12 md:h-14 px-6 md:px-8 text-base md:text-lg font-bold rounded-xl shadow-lg opacity-90 group-hover:opacity-100 transition-all hover:scale-105 w-full sm:w-auto"
                         >
                           Review Triage
                           <ChevronRight className="w-5 h-5 ml-2" />
@@ -296,7 +296,7 @@ export function DoctorQueue() {
                         <Button 
                           variant="secondary"
                           onClick={() => handleViewRecord(patient.token)}
-                          className="h-14 px-8 text-lg font-bold rounded-xl shadow-lg transition-all hover:scale-105 bg-white/10 hover:bg-white/20 text-white"
+                          className="h-12 md:h-14 px-6 md:px-8 text-base md:text-lg font-bold rounded-xl shadow-lg transition-all hover:scale-105 bg-white/10 hover:bg-white/20 text-white w-full sm:w-auto"
                         >
                           View Record
                           <ChevronRight className="w-5 h-5 ml-2" />

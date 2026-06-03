@@ -23,11 +23,11 @@ export function Navbar() {
       <div className="mx-auto flex max-w-7xl items-center justify-between">
         
         {/* Brand */}
-        <Link to="/" className="flex items-center space-x-3 transition-transform hover:scale-[1.02] active:scale-95 group">
-          <div className="bg-primary/10 p-2.5 rounded-xl border border-primary/20 shadow-[0_0_15px_rgba(0,200,255,0.15)] group-hover:shadow-[0_0_20px_rgba(0,200,255,0.3)] transition-all">
-            <Activity className="h-6 w-6 text-primary" />
+        <Link to="/" className="flex items-center space-x-2 sm:space-x-3 transition-transform hover:scale-[1.02] active:scale-95 group shrink-0">
+          <div className="bg-primary/10 p-2 sm:p-2.5 rounded-xl border border-primary/20 shadow-[0_0_15px_rgba(0,200,255,0.15)] group-hover:shadow-[0_0_20px_rgba(0,200,255,0.3)] transition-all">
+            <Activity className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
           </div>
-          <span className="text-2xl font-black font-heading tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70 group-hover:to-primary transition-all duration-300">
+          <span className="text-xl sm:text-2xl font-black font-heading tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70 group-hover:to-primary transition-all duration-300">
             MediPreCheck
           </span>
         </Link>
@@ -42,8 +42,8 @@ export function Navbar() {
           </div>
 
           {currentUser && (
-            <div className="flex items-center gap-4 ml-4 pl-4 border-l border-foreground/10">
-              <div className="flex flex-col items-end mr-4">
+            <div className="flex items-center gap-2 sm:gap-4 ml-2 sm:ml-4 pl-2 sm:pl-4 border-l border-foreground/10">
+              <div className="hidden md:flex flex-col items-end mr-4">
                 <span className="text-sm font-bold text-foreground flex items-center gap-1.5">
                   <User className="w-4 h-4 text-muted-foreground" /> {currentUser.email}
                 </span>
