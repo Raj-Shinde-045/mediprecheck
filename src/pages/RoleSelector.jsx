@@ -33,11 +33,7 @@ export function RoleSelector() {
           scale: [1, 1.2, 1]
         }}
         transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-<<<<<<< HEAD
-        className="hidden md:block absolute top-1/4 left-1/4 w-[90vw] max-w-[500px] h-[90vw] max-h-[500px] bg-primary/20 rounded-full blur-[120px] -z-10" 
-=======
-        className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-primary/30 dark:bg-primary/20 rounded-full blur-[120px] opacity-90 dark:opacity-70 animate-blob pointer-events-none" 
->>>>>>> ca473d16b8de87a4745af1cc484ca8576fa6f872
+        className="hidden md:block absolute top-1/4 left-1/4 w-[90vw] max-w-[500px] h-[90vw] max-h-[500px] bg-primary/30 dark:bg-primary/20 rounded-full blur-[120px] opacity-90 dark:opacity-70 animate-blob pointer-events-none -z-10" 
       />
       <motion.div 
         animate={{ 
@@ -46,11 +42,7 @@ export function RoleSelector() {
           scale: [1, 1.3, 1]
         }}
         transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-<<<<<<< HEAD
-        className="hidden md:block absolute bottom-1/4 right-1/4 w-[90vw] max-w-[600px] h-[90vw] max-h-[600px] bg-blue-600/10 rounded-full blur-[150px] -z-10" 
-=======
-        className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-blue-600/15 dark:bg-blue-600/10 rounded-full blur-[150px] opacity-90 dark:opacity-70 animate-blob animation-delay-4000 pointer-events-none" 
->>>>>>> ca473d16b8de87a4745af1cc484ca8576fa6f872
+        className="hidden md:block absolute bottom-1/4 right-1/4 w-[90vw] max-w-[600px] h-[90vw] max-h-[600px] bg-blue-600/15 dark:bg-blue-600/10 rounded-full blur-[150px] opacity-90 dark:opacity-70 animate-blob animation-delay-4000 pointer-events-none -z-10" 
       />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/90 -z-10" />
 
@@ -69,11 +61,7 @@ export function RoleSelector() {
           >
             <ActivitySquare className="h-10 w-10 text-primary" />
           </motion.div>
-<<<<<<< HEAD
-          <h1 className="text-5xl md:text-8xl font-black tracking-tighter mb-6 bg-clip-text text-transparent bg-gradient-to-b from-foreground dark:from-white to-foreground/60 dark:to-white/60 drop-shadow-sm">
-=======
-          <h1 className="text-6xl md:text-8xl font-black tracking-tighter mb-6 bg-clip-text text-transparent bg-gradient-to-b from-[#1a1a1a] dark:from-white to-[#404040] dark:to-white/60 drop-shadow-sm">
->>>>>>> ca473d16b8de87a4745af1cc484ca8576fa6f872
+          <h1 className="text-5xl md:text-8xl font-black tracking-tighter mb-6 bg-clip-text text-transparent bg-gradient-to-b from-[#1a1a1a] dark:from-white to-[#404040] dark:to-white/60 drop-shadow-sm">
             The Future of <br className="hidden md:block" /> Patient Intake.
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground font-medium max-w-3xl mx-auto leading-relaxed">
@@ -91,13 +79,8 @@ export function RoleSelector() {
             className="group relative cursor-pointer"
           >
             <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-blue-600/30 rounded-[2.5rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-<<<<<<< HEAD
-            <div className="relative h-full bg-white/5 dark:bg-white/5 backdrop-blur-2xl border border-foreground/10 dark:border-white/10 p-6 md:p-10 rounded-[2.5rem] hover:border-primary/50 transition-all duration-500 shadow-2xl overflow-hidden flex flex-col">
-              <div className="absolute -top-10 -right-10 p-4 opacity-5 group-hover:opacity-10 transition-opacity duration-500 group-hover:rotate-12 group-hover:scale-110">
-=======
-            <div className="relative h-full bg-white/5 dark:bg-white/5 backdrop-blur-2xl border border-foreground/20 dark:border-white/10 p-10 rounded-[2.5rem] hover:border-primary/50 transition-all duration-500 shadow-2xl overflow-hidden flex flex-col">
+            <div className="relative h-full bg-white/5 dark:bg-white/5 backdrop-blur-2xl border border-foreground/20 dark:border-white/10 p-6 md:p-10 rounded-[2.5rem] hover:border-primary/50 transition-all duration-500 shadow-2xl overflow-hidden flex flex-col">
               <div className="absolute -top-10 -right-10 p-4 opacity-40 dark:opacity-5 group-hover:opacity-60 dark:group-hover:opacity-10 transition-opacity duration-500 group-hover:rotate-12 group-hover:scale-110 text-foreground/80 dark:text-foreground/5">
->>>>>>> ca473d16b8de87a4745af1cc484ca8576fa6f872
                 <ScanFace className="w-64 h-64" />
               </div>
               <div className="bg-primary/40 dark:bg-primary/20 w-20 h-20 rounded-3xl flex items-center justify-center mb-8 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-500 shadow-inner border border-foreground/20 dark:border-white/10">
@@ -124,13 +107,8 @@ export function RoleSelector() {
             className="group relative cursor-pointer"
           >
             <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/30 to-teal-600/30 rounded-[2.5rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-<<<<<<< HEAD
-            <div className="relative h-full bg-white/5 dark:bg-white/5 backdrop-blur-2xl border border-foreground/10 dark:border-white/10 p-6 md:p-10 rounded-[2.5rem] hover:border-emerald-500/50 transition-all duration-500 shadow-2xl overflow-hidden flex flex-col">
-              <div className="absolute -top-10 -right-10 p-4 opacity-5 group-hover:opacity-10 transition-opacity duration-500 group-hover:rotate-12 group-hover:scale-110">
-=======
-            <div className="relative h-full bg-white/5 dark:bg-white/5 backdrop-blur-2xl border border-foreground/20 dark:border-white/10 p-10 rounded-[2.5rem] hover:border-emerald-500/50 transition-all duration-500 shadow-2xl overflow-hidden flex flex-col">
+            <div className="relative h-full bg-white/5 dark:bg-white/5 backdrop-blur-2xl border border-foreground/20 dark:border-white/10 p-6 md:p-10 rounded-[2.5rem] hover:border-emerald-500/50 transition-all duration-500 shadow-2xl overflow-hidden flex flex-col">
               <div className="absolute -top-10 -right-10 p-4 opacity-40 dark:opacity-5 group-hover:opacity-60 dark:group-hover:opacity-10 transition-opacity duration-500 group-hover:rotate-12 group-hover:scale-110 text-foreground/80 dark:text-foreground/5">
->>>>>>> ca473d16b8de87a4745af1cc484ca8576fa6f872
                 <Stethoscope className="w-64 h-64" />
               </div>
               <div className="bg-emerald-500/40 dark:bg-emerald-500/20 w-20 h-20 rounded-3xl flex items-center justify-center mb-8 group-hover:bg-emerald-500 group-hover:text-foreground dark:group-hover:text-white transition-all duration-500 shadow-inner border border-foreground/20 dark:border-white/10">

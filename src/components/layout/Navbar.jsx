@@ -27,11 +27,7 @@ export function Navbar() {
           <div className="bg-primary/10 p-2 sm:p-2.5 rounded-xl border border-primary/20 shadow-[0_0_15px_rgba(0,200,255,0.15)] group-hover:shadow-[0_0_20px_rgba(0,200,255,0.3)] transition-all">
             <Activity className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
           </div>
-<<<<<<< HEAD
-          <span className="text-xl sm:text-2xl font-black font-heading tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70 group-hover:to-primary transition-all duration-300">
-=======
-          <span className="text-2xl font-black font-heading tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-[#1a1a1a] dark:from-foreground to-primary group-hover:to-primary transition-all duration-300">
->>>>>>> ca473d16b8de87a4745af1cc484ca8576fa6f872
+          <span className="text-xl sm:text-2xl font-black font-heading tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-[#1a1a1a] dark:from-foreground to-primary group-hover:to-primary transition-all duration-300">
             MediPreCheck
           </span>
         </Link>
