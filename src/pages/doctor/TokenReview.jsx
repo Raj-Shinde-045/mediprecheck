@@ -118,10 +118,10 @@ export function TokenReview() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             className={`md:col-span-4 rounded-xl p-6 border shadow-lg flex flex-col md:flex-row items-center justify-between gap-6 ${
-              summary.riskLevel === 'Critical' ? 'bg-red-600/20 border-red-600 text-red-100 shadow-red-600/20' :
-              summary.riskLevel === 'High' ? 'bg-orange-500/20 border-orange-500 text-orange-100 shadow-orange-500/20' :
-              summary.riskLevel === 'Medium' ? 'bg-yellow-500/10 border-yellow-500/50 text-yellow-600 dark:text-yellow-400' :
-              'bg-green-500/10 border-green-500/50 text-green-600 dark:text-green-400'
+              summary.riskLevel === 'Critical' ? 'bg-red-100 dark:bg-red-600/20 border-red-600 text-red-700 dark:text-red-100 shadow-red-600/20' :
+              summary.riskLevel === 'High' ? 'bg-orange-100 dark:bg-orange-500/20 border-orange-500 text-orange-800 dark:text-orange-100 shadow-orange-500/20' :
+              summary.riskLevel === 'Medium' ? 'bg-yellow-50 dark:bg-yellow-500/10 border-yellow-500/50 text-yellow-700 dark:text-yellow-400' :
+              'bg-green-50 dark:bg-green-500/10 border-green-500/50 text-green-700 dark:text-green-400'
             }`}
           >
             <div className="flex items-start gap-4">
@@ -135,7 +135,7 @@ export function TokenReview() {
                 </h2>
                 {summary.redFlags && summary.redFlags.length > 0 && summary.redFlags[0] !== '' && summary.redFlags[0] !== 'Leave array empty if no red flags are present' && (
                   <div className="mt-3 text-sm font-medium">
-                    <span className="font-bold opacity-80 uppercase tracking-wider text-xs block mb-1">Detected Red Flags:</span>
+                    <span className="font-bold opacity-100 uppercase tracking-wider text-xs block mb-1">Detected Red Flags:</span>
                     <ul className="list-disc list-inside space-y-1">
                       {summary.redFlags.map((flag, idx) => (
                         <li key={idx} className="leading-snug">{flag}</li>
@@ -256,14 +256,14 @@ export function TokenReview() {
                 {summary.dietaryAdvice && (
                   <div className="p-6 bg-background/50 border-t border-white/5 grid md:grid-cols-2 gap-6">
                     <div className="space-y-3">
-                      <h3 className="text-sm font-black text-green-500 uppercase tracking-widest flex items-center">
+                      <h3 className="text-sm font-black text-green-600 dark:text-green-500 uppercase tracking-widest flex items-center">
                         <Apple className="w-4 h-4 mr-2" />
                         Recommended to Consume
                       </h3>
-                      <ul className="space-y-2 bg-green-500/10 p-4 rounded-xl border border-green-500/20">
+                      <ul className="space-y-2 bg-green-500/30 dark:bg-green-500/10 p-4 rounded-xl border border-green-500/40 dark:border-green-500/20">
                         {summary.dietaryAdvice.toEat.map((item, idx) => (
-                          <li key={idx} className="flex items-start text-green-100 font-medium text-sm">
-                            <span className="mr-2 text-green-500 font-black">•</span>
+                          <li key={idx} className="flex items-start text-green-700 dark:text-green-100 font-medium text-sm">
+                            <span className="mr-2 text-green-600 dark:text-green-500 font-black">•</span>
                             {item}
                           </li>
                         ))}
@@ -271,14 +271,14 @@ export function TokenReview() {
                     </div>
                     
                     <div className="space-y-3">
-                      <h3 className="text-sm font-black text-red-500 uppercase tracking-widest flex items-center">
+                      <h3 className="text-sm font-black text-red-600 dark:text-red-500 uppercase tracking-widest flex items-center">
                         <AlertOctagon className="w-4 h-4 mr-2" />
                         Recommended to Avoid
                       </h3>
-                      <ul className="space-y-2 bg-red-500/10 p-4 rounded-xl border border-red-500/20">
+                      <ul className="space-y-2 bg-red-500/30 dark:bg-red-500/10 p-4 rounded-xl border border-red-500/40 dark:border-red-500/20">
                         {summary.dietaryAdvice.toAvoid.map((item, idx) => (
-                          <li key={idx} className="flex items-start text-red-100 font-medium text-sm">
-                            <span className="mr-2 text-red-500 font-black">•</span>
+                          <li key={idx} className="flex items-start text-red-700 dark:text-red-100 font-medium text-sm">
+                            <span className="mr-2 text-red-600 dark:text-red-500 font-black">•</span>
                             {item}
                           </li>
                         ))}
@@ -289,8 +289,8 @@ export function TokenReview() {
 
                 {/* AI TIME MACHINE */}
                 {summary.diseaseProgression && summary.diseaseProgression.length > 0 && (
-                  <div className="p-6 bg-gradient-to-br from-indigo-900/40 to-purple-900/40 border-t border-indigo-500/20">
-                    <h3 className="text-sm font-black text-indigo-400 uppercase tracking-widest flex items-center mb-6">
+                  <div className="p-6 bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/40 dark:to-purple-900/40 border-t border-indigo-300 dark:border-indigo-500/20">
+                    <h3 className="text-sm font-black text-indigo-700 dark:text-indigo-400 uppercase tracking-widest flex items-center mb-6">
                       <History className="w-4 h-4 mr-2" />
                       AI Time Machine (Disease Progression Simulator)
                     </h3>
@@ -306,21 +306,21 @@ export function TokenReview() {
                             <div className={`w-12 h-12 rounded-full flex items-center justify-center font-black text-xl z-10 transition-colors ${timeMachineDay === day ? 'bg-indigo-500 text-white shadow-[0_0_20px_rgba(99,102,241,0.8)] border-2 border-indigo-300' : 'bg-background border-2 border-white/10'}`}>
                               {day}
                             </div>
-                            <span className={`text-xs font-bold uppercase tracking-wider ${timeMachineDay === day ? 'text-indigo-300' : 'text-muted-foreground'}`}>Day {day}</span>
+                            <span className={`text-xs font-bold uppercase tracking-wider ${timeMachineDay === day ? 'text-indigo-600 dark:text-indigo-300' : 'text-foreground/60 dark:text-muted-foreground'}`}>Day {day}</span>
                           </button>
                         ))}
                       </div>
                       
-                      <div className="relative h-2 bg-black/50 rounded-full overflow-hidden mx-8 md:mx-16 -mt-16 mb-12 shadow-inner">
+                      <div className="relative h-2 bg-indigo-300/40 dark:bg-black/50 rounded-full overflow-hidden mx-8 md:mx-16 -mt-16 mb-12 shadow-inner">
                         <div 
-                          className="absolute top-0 left-0 h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-500" 
+                          className="absolute top-0 left-0 h-full bg-gradient-to-r from-indigo-600 dark:from-indigo-500 to-purple-600 dark:to-purple-500 transition-all duration-500" 
                           style={{ width: `${((timeMachineDay - 1) / 3) * 100}%` }}
                         />
                       </div>
 
-                      <div className="bg-background/80 p-6 md:p-8 rounded-2xl border border-indigo-500/30 shadow-[inset_0_2px_20px_rgba(0,0,0,0.5)] min-h-[120px] flex flex-col items-center justify-center text-center relative overflow-hidden">
-                        <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500"></div>
-                        <p className="text-lg md:text-xl font-medium text-indigo-100 leading-relaxed max-w-2xl">
+                      <div className="bg-white dark:bg-background/80 p-6 md:p-8 rounded-2xl border border-indigo-400 dark:border-indigo-500/30 shadow-[inset_0_2px_20px_rgba(0,0,0,0.1)] dark:shadow-[inset_0_2px_20px_rgba(0,0,0,0.5)] min-h-[120px] flex flex-col items-center justify-center text-center relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-1 h-full bg-indigo-600 dark:bg-indigo-500"></div>
+                        <p className="text-lg md:text-xl font-medium text-indigo-900 dark:text-indigo-100 leading-relaxed max-w-2xl">
                           {summary.diseaseProgression.find(p => p.day === timeMachineDay)?.prediction || 'No prediction available for this timeframe.'}
                         </p>
                       </div>

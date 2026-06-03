@@ -27,7 +27,11 @@ export function Navbar() {
           <div className="bg-primary/10 p-2 sm:p-2.5 rounded-xl border border-primary/20 shadow-[0_0_15px_rgba(0,200,255,0.15)] group-hover:shadow-[0_0_20px_rgba(0,200,255,0.3)] transition-all">
             <Activity className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
           </div>
+<<<<<<< HEAD
           <span className="text-xl sm:text-2xl font-black font-heading tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70 group-hover:to-primary transition-all duration-300">
+=======
+          <span className="text-2xl font-black font-heading tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-[#1a1a1a] dark:from-foreground to-primary group-hover:to-primary transition-all duration-300">
+>>>>>>> ca473d16b8de87a4745af1cc484ca8576fa6f872
             MediPreCheck
           </span>
         </Link>
@@ -53,14 +57,14 @@ export function Navbar() {
               </div>
               <button 
                 onClick={toggleTheme}
-                className="bg-foreground/10 hover:bg-foreground/20 text-foreground p-2 rounded-xl border border-foreground/10 transition-all hover:scale-105 active:scale-95 flex items-center justify-center dark:text-foreground dark:hover:bg-foreground/20"
+                className="bg-foreground/10 hover:bg-foreground/20 text-foreground dark:text-foreground p-2 rounded-xl border border-foreground/10 transition-all hover:scale-105 active:scale-95 flex items-center justify-center"
                 title={isDark ? "Switch to light mode" : "Switch to dark mode"}
               >
                 {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
               </button>
               <Link 
                 to="/settings"
-                className="bg-foreground/10 hover:bg-foreground/20 text-foreground p-2 rounded-xl border border-foreground/10 transition-all hover:scale-105 active:scale-95 dark:text-foreground dark:hover:bg-foreground/20"
+                className="bg-foreground/10 hover:bg-foreground/20 text-foreground dark:text-foreground p-2 rounded-xl border border-foreground/10 transition-all hover:scale-105 active:scale-95"
                 title="Settings"
               >
                 <SettingsIcon className="w-5 h-5" />
