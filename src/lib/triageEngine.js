@@ -5,7 +5,7 @@ const apiKey = import.meta.env.VITE_GROQ_API_KEY;
 const groq = apiKey ? new Groq({ apiKey, dangerouslyAllowBrowser: true }) : null;
 const MODEL = "llama-3.3-70b-versatile";
 
-export async function generateNextQuestion(history, language = "English") {
+export async function generateNextQuestion(history, language = "English", isPro = false) {
   if (!groq) throw new Error("Groq API key not found in .env.local");
   
   // Cap at 4 questions to save time, then finish
@@ -34,6 +34,7 @@ ${transcript ? transcript : "None yet. This is the first question."}
 
 Instructions:
 1. Ask exactly ONE follow-up question.
+${isPro ? "ADVANCED TIER INSTRUCTION: Provide extremely detailed, nuanced diagnostic questions that consider complex comorbidities and rare presentations." : "BASIC TIER INSTRUCTION: Keep the questions focused strictly on basic primary care and simple symptoms."}
 2. ${isFirstQuestion 
   ? "CRITICAL: Because this is the VERY FIRST question, DO NOT ask Yes/No red-flag questions yet. Your goal is to narrow down the chief complaint. Ask a clarifying multiple-choice question to pinpoint the exact location, type, or primary nature of the symptom. Provide 3 to 4 specific symptom options based on the category."
   : "Now that the primary symptom is established, prioritize ruling out IMMEDIATE life-threatening conditions or gauging severity. You can use Yes/No or specific symptom descriptors."}
@@ -72,7 +73,7 @@ Do not output any markdown or explanation, just the raw JSON object.`;
   }
 }
 
-export async function generateSummary(history) {
+export async function generateSummary(history, isPro = false) {
   if (!groq) throw new Error("Groq API key not found");
 
   const intake = history[0];
@@ -103,7 +104,7 @@ Analyze the transcript and generate a structured JSON output with the following 
   ],
   "riskLevel": "Low", // Evaluate the transcript and vitals. Value MUST be one of: "Low", "Medium", "High", "Critical"
   "redFlags": ["List any specific alarming symptoms or abnormal vitals indicating a medical emergency IN ENGLISH", "Leave array empty if no red flags are present"],
-  "verdict": "Provide a concise 2-3 sentence 'Junior Doctor Verdict' IN ENGLISH. State the top 3 differential diagnoses (DDx) based on the symptoms and vitals. Highlight any immediate red flags. CRITICAL INSTRUCTION: You MUST wrap ONLY the specific Differential Diagnoses in **double asterisks** so they stand out (e.g. **Pulmonary Embolism**, **Pneumonia**).",
+  "verdict": "Provide a concise 'Junior Doctor Verdict' IN ENGLISH. ${isPro ? "ADVANCED TIER: State the top 5 detailed differential diagnoses (DDx) considering complex comorbidities." : "BASIC TIER: State the top 3 differential diagnoses (DDx)."} Highlight any immediate red flags. CRITICAL INSTRUCTION: You MUST wrap ONLY the specific Differential Diagnoses in **double asterisks** so they stand out (e.g. **Pulmonary Embolism**, **Pneumonia**).",
   "dietaryAdvice": {
     "toEat": ["List 2-3 specific foods or dietary habits the patient SHOULD consume to aid recovery based on the suspected condition IN ENGLISH"],
     "toAvoid": ["List 2-3 specific foods or habits the patient SHOULD AVOID IN ENGLISH"]

@@ -78,7 +78,7 @@ clinics/{clinicId}/
 Set the following in `.env.local`:
 
 ```env
-VITE_RAZORPAY_KEY_ID=rzp_test_SxF3VFyjVMLyg1
+VITE_RAZORPAY_KEY_ID=your_razorpay_key_id
 VITE_RAZORPAY_KEY_SECRET=NWRhymL8HNMkFKPTdJEznPPp
 ```
 

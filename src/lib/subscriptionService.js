@@ -62,46 +62,46 @@ export const initiateRazorpayPayment = async (planId, clinicId, clinicEmail, cli
       throw new Error('Failed to load Razorpay. Please try again.');
     }
 
-    const options = {
-      key: RAZORPAY_CONFIG.KEY_ID,
-      amount: plan.price * 100, // Amount in paise
-      currency: plan.currency,
-      name: 'MedipreCheck',
-      description: `${plan.name} - Monthly Subscription`,
-      image: '/logo.png', // Add your logo if available
-      receipt: `receipt_${clinicId}_${Date.now()}`,
-      notes: {
-        clinicId: clinicId,
-        planId: planId,
-        planName: plan.name
-      },
-      handler: async (response) => {
-        // Payment successful
-        return {
-          success: true,
-          paymentId: response.razorpay_payment_id,
-          orderId: response.razorpay_order_id,
-          signature: response.razorpay_signature
-        };
-      },
-      modal: {
-        ondismiss: () => {
-          return {
-            success: false,
-            error: 'Payment cancelled by user'
-          };
-        }
-      },
-      prefill: {
-        email: clinicEmail,
-        name: clinicName
-      },
-      theme: {
-        color: '#3B82F6'
-      }
-    };
-
     return new Promise((resolve, reject) => {
+      const options = {
+        key: RAZORPAY_CONFIG.KEY_ID,
+        amount: plan.price * 100, // Amount in paise
+        currency: plan.currency,
+        name: 'MedipreCheck',
+        description: `${plan.name} - Monthly Subscription`,
+        image: '/logo.png', // Add your logo if available
+        receipt: `receipt_${clinicId}_${Date.now()}`,
+        notes: {
+          clinicId: clinicId,
+          planId: planId,
+          planName: plan.name
+        },
+        handler: function (response) {
+          // Payment successful
+          resolve({
+            success: true,
+            paymentId: response.razorpay_payment_id || null,
+            orderId: response.razorpay_order_id || null,
+            signature: response.razorpay_signature || null
+          });
+        },
+        modal: {
+          ondismiss: () => {
+            resolve({
+              success: false,
+              error: 'Payment cancelled by user'
+            });
+          }
+        },
+        prefill: {
+          email: clinicEmail,
+          name: clinicName
+        },
+        theme: {
+          color: '#3B82F6'
+        }
+      };
+
       const rzp = new window.Razorpay(options);
       
       rzp.on('payment.failed', (response) => {

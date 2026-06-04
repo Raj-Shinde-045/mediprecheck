@@ -1,8 +1,8 @@
 // Razorpay Subscription Configuration
 export const RAZORPAY_CONFIG = {
   // Razorpay API Keys - Should be moved to environment variables in production
-  KEY_ID: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_SxF3VFyjVMLyg1',
-  KEY_SECRET: import.meta.env.VITE_RAZORPAY_KEY_SECRET || 'NWRhymL8HNMkFKPTdJEznPPp',
+  KEY_ID: import.meta.env.VITE_RAZORPAY_KEY_ID || '',
+  KEY_SECRET: import.meta.env.VITE_RAZORPAY_KEY_SECRET || '',
 };
 
 // Subscription Plans

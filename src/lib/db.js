@@ -32,4 +32,13 @@ export async function submitPatientTriage(clinicId, doctorId, token, payload) {
     timeWaiting: new Date().toLocaleTimeString(),
     createdAt: serverTimestamp()
   });
+
+  // Increment monthly patient counter
+  const date = new Date();
+  const yyyyMM = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+  const counterRef = ref(db, `clinics/${clinicId}/stats/${yyyyMM}/patientCount`);
+  await runTransaction(counterRef, (currentData) => {
+    if (currentData === null) return 1;
+    return currentData + 1;
+  });
 }

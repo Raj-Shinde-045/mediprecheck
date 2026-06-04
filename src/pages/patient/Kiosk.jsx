@@ -8,6 +8,7 @@ import { generateToken, submitPatientTriage } from '../../lib/db';
 import { db } from '../../lib/firebase';
 import { ref, get } from 'firebase/database';
 import { useAuth } from '../../contexts/AuthContext';
+import { useSubscription } from '../../contexts/SubscriptionContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function Kiosk() {
@@ -21,6 +22,8 @@ export function Kiosk() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { currentUser } = useAuth();
+  const { isActive, isGrowth, isPro, loading: subLoading } = useSubscription();
+  const [patientCount, setPatientCount] = useState(0);
   
   const [doctorId, setDoctorId] = useState('');
   const [isDocDropdownOpen, setIsDocDropdownOpen] = useState(false);
@@ -64,8 +67,22 @@ export function Kiosk() {
       }
     }
 
+    async function loadPatientCount() {
+      if (!currentUser) return;
+      const date = new Date();
+      const yyyyMM = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      const countRef = ref(db, `clinics/${currentUser.uid}/stats/${yyyyMM}/patientCount`);
+      const snapshot = await get(countRef);
+      if (snapshot.exists()) {
+        setPatientCount(snapshot.val());
+      } else {
+        setPatientCount(0);
+      }
+    }
+
     loadDoctors();
     loadDefaultLanguage();
+    loadPatientCount();
   }, [currentUser]);
 
   const categories = [
@@ -106,7 +123,7 @@ export function Kiosk() {
     setHistory(initialHistory);
     
     setIsThinking(true);
-    const nextQ = await generateNextQuestion(initialHistory, sessionLanguage);
+    const nextQ = await generateNextQuestion(initialHistory, sessionLanguage, isPro);
     setIsThinking(false);
     setCurrentQuestion(nextQ);
   };
@@ -120,7 +137,7 @@ export function Kiosk() {
         setToken(newToken);
 
         // 2. Generate final summary
-        const finalSummary = await generateSummary(history);
+        const finalSummary = await generateSummary(history, isPro);
 
         // 3. Push to Firebase
         await submitPatientTriage(currentUser.uid, doctorId, newToken, {
@@ -143,7 +160,7 @@ export function Kiosk() {
     setCurrentQuestion(null);
     
     setIsThinking(true);
-    const nextQ = await generateNextQuestion(newHistory, sessionLanguage);
+    const nextQ = await generateNextQuestion(newHistory, sessionLanguage, isPro);
     setIsThinking(false);
     setCurrentQuestion(nextQ);
   };
@@ -163,6 +180,45 @@ export function Kiosk() {
           </Button>
         </Card>
       </motion.div>
+    );
+  }
+
+  // --- SUBSCRIPTION GATING ---
+  if (subLoading) {
+    return (
+      <div className="h-[80vh] flex items-center justify-center">
+        <Loader2 className="w-12 h-12 text-primary animate-spin" />
+      </div>
+    );
+  }
+
+  if (!isActive) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[80vh] px-4">
+        <Card glass className="max-w-md w-full p-8 text-center border-red-500/30">
+          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-red-500 mb-2">Subscription Required</h2>
+          <p className="text-muted-foreground mb-6">You need an active subscription to register patients.</p>
+          <Button onClick={() => window.location.href = '/settings'} className="w-full">
+            View Plans
+          </Button>
+        </Card>
+      </div>
+    );
+  }
+
+  if (isGrowth && patientCount >= 50) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[80vh] px-4">
+        <Card glass className="max-w-md w-full p-8 text-center border-orange-500/30">
+          <AlertCircle className="w-16 h-16 text-orange-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-orange-500 mb-2">Limit Reached</h2>
+          <p className="text-muted-foreground mb-6">You have reached the limit of 50 patients per month on the Growth plan.</p>
+          <Button onClick={() => window.location.href = '/settings'} className="w-full bg-orange-600 hover:bg-orange-700">
+            Upgrade to Pro
+          </Button>
+        </Card>
+      </div>
     );
   }
 

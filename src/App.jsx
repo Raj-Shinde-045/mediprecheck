@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { SubscriptionProvider } from './contexts/SubscriptionContext';
 import { AppLayout } from './components/layout/AppLayout';
 import { RoleSelector } from './pages/RoleSelector';
 import { AuthPage } from './pages/auth/AuthPage';
@@ -30,44 +31,46 @@ function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <Router>
-        <Routes>
-          <Route path="/" element={<AppLayout />}>
-            <Route index element={
-              <PrivateRoute>
-                <RoleSelector />
-              </PrivateRoute>
-            } />
-            <Route path="auth" element={<AuthPage />} />
+        <SubscriptionProvider>
+          <Router>
+          <Routes>
+            <Route path="/" element={<AppLayout />}>
+              <Route index element={
+                <PrivateRoute>
+                  <RoleSelector />
+                </PrivateRoute>
+              } />
+              <Route path="auth" element={<AuthPage />} />
 
-            {/* Patient Kiosk Flow */}
-            <Route path="patient" element={
-              <PrivateRoute>
-                <Kiosk />
-              </PrivateRoute>
-            } />
+              {/* Patient Kiosk Flow */}
+              <Route path="patient" element={
+                <PrivateRoute>
+                  <Kiosk />
+                </PrivateRoute>
+              } />
 
-            {/* Doctor Flow */}
-            <Route path="doctor" element={
-              <PrivateRoute>
-                <DoctorQueue />
-              </PrivateRoute>
-            } />
-            <Route path="doctor/review/:token" element={
-              <PrivateRoute>
-                <TokenReview />
-              </PrivateRoute>
-            } />
-            
-            {/* Clinic Settings */}
-            <Route path="settings" element={
-              <PrivateRoute>
-                <Settings />
-              </PrivateRoute>
-            } />
-          </Route>
-        </Routes>
-      </Router>
+              {/* Doctor Flow */}
+              <Route path="doctor" element={
+                <PrivateRoute>
+                  <DoctorQueue />
+                </PrivateRoute>
+              } />
+              <Route path="doctor/review/:token" element={
+                <PrivateRoute>
+                  <TokenReview />
+                </PrivateRoute>
+              } />
+              
+              {/* Clinic Settings */}
+              <Route path="settings" element={
+                <PrivateRoute>
+                  <Settings />
+                </PrivateRoute>
+              } />
+            </Route>
+          </Routes>
+        </Router>
+        </SubscriptionProvider>
       </AuthProvider>
     </ThemeProvider>
   );

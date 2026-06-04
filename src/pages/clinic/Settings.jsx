@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useSubscription } from '../../contexts/SubscriptionContext';
 import { db } from '../../lib/firebase';
 import { ref, get, set, remove, push } from 'firebase/database';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { SubscriptionCard } from '../../components/subscription/SubscriptionCard';
-import { Settings as SettingsIcon, UserPlus, Trash2, User, Building, Mail, Shield, Stethoscope, Activity, Edit2, X, Check } from 'lucide-react';
+import { Settings as SettingsIcon, UserPlus, Trash2, User, Building, Mail, Shield, Stethoscope, Activity, Edit2, X, Check, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export function Settings() {
   const { currentUser } = useAuth();
+  const { isGrowth } = useSubscription();
   const [doctors, setDoctors] = useState([]);
   const [newDocName, setNewDocName] = useState('');
   const [defaultLanguage, setDefaultLanguage] = useState('English');
@@ -208,7 +210,17 @@ export function Settings() {
             
             <CardContent className="p-8 flex-1">
               {/* Add Doctor Input */}
-              <div className="flex gap-4 mb-10 p-6 bg-background/60 border border-white/5 rounded-2xl shadow-inner relative z-10">
+              {isGrowth && doctors.length >= 1 && (
+                <div className="mb-6 p-4 bg-orange-500/10 border border-orange-500/20 rounded-xl flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-orange-400 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-sm font-bold text-orange-400">Doctor Limit Reached</p>
+                    <p className="text-xs text-orange-400/80 mt-1">Growth plan is limited to 1 doctor. Upgrade to Pro to add more.</p>
+                  </div>
+                </div>
+              )}
+              
+              <div className={`flex gap-4 mb-10 p-6 bg-background/60 border border-white/5 rounded-2xl shadow-inner relative z-10 ${isGrowth && doctors.length >= 1 ? 'opacity-50 pointer-events-none' : ''}`}>
                 <div className="relative flex-1">
                   <Input 
                     type="text" 
@@ -222,13 +234,14 @@ export function Settings() {
                         handleAddDoctor(e);
                       }
                     }}
+                    disabled={isGrowth && doctors.length >= 1}
                   />
                   <Stethoscope className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 </div>
                 <Button 
                   type="button" 
                   onClick={handleAddDoctor} 
-                  disabled={!newDocName.trim()}
+                  disabled={!newDocName.trim() || (isGrowth && doctors.length >= 1)}
                   className="h-14 px-8 text-lg font-bold rounded-xl shadow-lg transition-all hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
                 >
                   <UserPlus className="w-5 h-5 mr-2" />
