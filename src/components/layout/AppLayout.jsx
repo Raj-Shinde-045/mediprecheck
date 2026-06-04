@@ -1,5 +1,5 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, Link } from 'react-router-dom';
 import { Navbar } from './Navbar';
 import { useTheme } from '../../contexts/ThemeContext';
 
@@ -15,9 +15,21 @@ export function AppLayout() {
 
       <Navbar />
       
-      <main className="flex-1 w-full max-w-7xl mx-auto p-4 md:p-6 z-10 relative">
-        <Outlet />
+      <main className="flex-1 w-full max-w-7xl mx-auto p-4 md:p-6 z-10 relative flex flex-col">
+        <div className="flex-1">
+          <Outlet />
+        </div>
       </main>
+
+      {/* Footer */}
+      <footer className="w-full border-t border-border bg-background/50 backdrop-blur-md py-4 z-10 relative mt-auto">
+        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between text-sm text-muted-foreground gap-4">
+          <p>© {new Date().getFullYear()} MediPreCheck. All rights reserved.</p>
+          <div className="flex gap-4">
+            <Link to="/terms" className="hover:text-primary transition-colors">Terms & Conditions</Link>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

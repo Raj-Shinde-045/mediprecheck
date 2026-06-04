@@ -10,6 +10,7 @@ import { Kiosk } from './pages/patient/Kiosk';
 import { DoctorQueue } from './pages/doctor/Queue';
 import { TokenReview } from './pages/doctor/TokenReview';
 import { Settings } from './pages/clinic/Settings';
+import { Terms } from './pages/Terms';
 
 function PrivateRoute({ children }) {
   const { currentUser, loading } = useAuth();
@@ -41,6 +42,7 @@ function App() {
                 </PrivateRoute>
               } />
               <Route path="auth" element={<AuthPage />} />
+              <Route path="terms" element={<Terms />} />
 
               {/* Patient Kiosk Flow */}
               <Route path="patient" element={
